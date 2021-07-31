@@ -107,12 +107,14 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
 
     local AttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.MainFrameBackground, {["x"]=600, ["y"]=100}, nil, "Attachments", nil, 4, {10,10,10,0})
 
+    local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(AttachmentsContainer, CleanTickets.Config.MainFrameBackground, {["x"]=0, ["y"]=25}, nil, "", nil, 4, {10,25,10,0})
+
     local link = ""
-    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(AttachmentsContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 25}, 4, {10,10,10,0}, nil, function(text)
+    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 25}, 2, {0,0,0,0}, nil, function(text)
         link = text
     end)
 
-    local AddAttachementButton = CleanTickets.GUI.Utils.DrawButton(AttachmentsContainer, "Add link", "ct_TextFont", {["x"] = 500, ["y"] = 25}, 4, {10,10,10,0}, function()
+    local AddAttachementButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, "Add link", "ct_TextFont", {["x"] = 100, ["y"] = 25}, 2, {10,0,0,0}, nil, function()
         for k, v in pairs(attachments) do
             -- if(v[2] == data) then
             if (v == value) then
