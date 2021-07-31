@@ -1,7 +1,7 @@
 local Language_EN = {
     -- [PANEL]
     -- TABS
-    PANEL_TAB_SENDTICKET = "Nouveau ticket",
+    PANEL_TAB_SENDTICKET = "New ticket",
     PANEL_TAB_MYTICKETS = "My Ticket",
     PANEL_TAB_ADMIN = "Admin Panel",
 
