@@ -127,15 +127,15 @@ function CleanTickets.GUI.Utils.DrawComboBox(parent, color, font, size, items, d
 
 end
 
-function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, margin, paint, onvaluechange)
+function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, margin, paint, onvaluechange, multiline, maxcharacters)
     local msgfocused = false
     local textboxcontainer = CleanTickets.GUI.Utils.DrawContainer(parent, nil, {["x"]=size["x"] or 0, ["y"]=size["y"] or 0}, nil, "", function(self, w, h) 
         if (msgfocused) then
-            draw.RoundedBox(10, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
+            draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
         else
-            draw.RoundedBox(10, 0, 0, w, h, CleanTickets.Config.AccentColor)
+            draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
         end
-        draw.RoundedBox(10, 2, 2, w - 4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
+        draw.RoundedBox(8, 2, 2, w - 4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
     end)
 
     if dock then
@@ -149,9 +149,11 @@ function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, mar
     
     textbox:SetFont(font)
     textbox:SetUpdateOnType(true)
-    textbox:SetMultiline(true)
+    if multiline then
+        textbox:SetMultiline(true)
+    end
     textbox:Dock(1)
-    textbox:DockMargin(2,2,2,2)
+    textbox:DockMargin(3,3,3,3)
 
     textbox.Paint = function(self, w, h)
         -- draw.RoundedBox(15, 0, 0, w, h, Color(100, 100, 100))
@@ -163,6 +165,12 @@ function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, mar
         end
     end
     function textbox:OnValueChange(value)
+        if maxcharacters and string.len(value) == maxcharacters then
+            textbox.AllowInput = function(s, val) return true end
+            CT_ShowNotif(CleanTickets.Lang.PANEL_TEXTBOXLIMIT, 0, 3, nil)
+        else
+            textbox.AllowInput = function(s, val) return false end
+        end
         onvaluechange(value)
     end
 
@@ -172,6 +180,7 @@ end
 function CleanTickets.GUI.Utils.DrawButton(parent, text, font, size, dock, margin, paint, doclick)
     local button = vgui.Create( "DButton", parent )
     button:SetFont(font)
+    button:SetColor(CleanTickets.Config.TextColor)
     button:SetSize(size["x"] or 0, size["y"] or 0)
     if dock then
         button:Dock(dock)
@@ -183,7 +192,13 @@ function CleanTickets.GUI.Utils.DrawButton(parent, text, font, size, dock, margi
         button.Paint = paint
     else
         button.Paint = function(s,w, h)
-            draw.RoundedBox(10, 0, 0, w, h, CleanTickets.Config.AccentColor)
+            if s:IsHovered() then
+                draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
+                -- draw.RoundedBox(8, 2, 2, w-4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
+            else
+                draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
+                -- draw.RoundedBox(8, 2, 2, w-4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
+            end
         end
     end
     button:SetText(text)

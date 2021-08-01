@@ -1,9 +1,29 @@
 local Language_EN = {
     -- [PANEL]
+
     -- TABS
     PANEL_TAB_SENDTICKET = "New ticket",
     PANEL_TAB_MYTICKETS = "My Ticket",
     PANEL_TAB_ADMIN = "Admin Panel",
+
+    -- [PANEL_SENDTICKET]
+    PANEL_SENDTICKET_DESCRIPTION = "Description",
+    PANEL_SENDTICKET_SELECTPLAYERS = "Select players",
+    PANEL_SENDTICKET_SUBJECT = "Subject",
+    PANEL_SENDTICKET_ATTACHMENTS = "Attachments",
+    PANEL_SENDTICKET_ATTACHEMENTLIMIT = "You've reached the attachment limit",
+
+    PANEL_SENDTICKET_BTNADDLINK = "Add link",
+    PANEL_SENDTICKET_BTNSEND = "Send",
+
+    -- [PANEL_MYTICKETS]
+
+
+    -- [PANEL_ADMIN]
+
+
+    -- MISC
+    PANEL_TEXTBOXLIMIT = "You've reached the character limit.",
 
     -- [TICKETS]
     -- TICKETS STATUS --
@@ -30,10 +50,29 @@ local Language_EN = {
 
 local Language_FR = {
     -- [PANEL]
-    -- TABS
-    PANEL_TAB_SENDTICKET = "Nouveau ticket",
-    PANEL_TAB_MYTICKETS = "Mes tickets",
-    PANEL_TAB_ADMIN = "Administration",
+        -- TABS
+        PANEL_TAB_SENDTICKET = "Nouveau ticket",
+        PANEL_TAB_MYTICKETS = "Mes tickets",
+        PANEL_TAB_ADMIN = "Administration",
+
+        -- [PANEL_SENDTICKET]
+        PANEL_SENDTICKET_DESCRIPTION = "Description",
+        PANEL_SENDTICKET_SELECTPLAYERS = "Sélectionner joueurs",
+        PANEL_SENDTICKET_SUBJECT = "Objet",
+        PANEL_SENDTICKET_ATTACHMENTS = "Pièces jointes",
+        PANEL_SENDTICKET_ATTACHEMENTLIMIT = "Vous avez atteint la limite de pièces jointes",
+    
+        PANEL_SENDTICKET_BTNADDLINK = "Ajouter le lien",
+        PANEL_SENDTICKET_BTNSEND = "Envoyer",
+    
+        -- [PANEL_MYTICKETS]
+    
+    
+        -- [PANEL_ADMIN]
+    
+    
+        -- MISC
+        PANEL_TEXTBOXLIMIT = "Vous avez atteint la limite de caractères.",
 
     -- [TICKETS]
     -- TICKETS STATUS --

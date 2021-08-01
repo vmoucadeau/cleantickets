@@ -3,11 +3,11 @@ CleanTickets.GUI.Panel = {}
 function CleanTickets.GUI.Panel.Main()
     local tabstable = {
         [1] = {
-            name = "Send a ticket",
+            name = CleanTickets.Lang.PANEL_TAB_SENDTICKET,
             panel = CleanTickets.GUI.Panel.SendTicket
         },
         [2] = {
-            name = "My tickets",
+            name = CleanTickets.Lang.PANEL_TAB_MYTICKETS,
             panel = CleanTickets.GUI.Panel.MyTickets
         }
     }
@@ -91,6 +91,8 @@ function CleanTickets.GUI.Panel.Main()
         draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
     end
 
+    local btn_selection
+
     for k, v in ipairs(tabstable) do
 
         local btn = vgui.Create("DButton", frame)
@@ -122,21 +124,21 @@ function CleanTickets.GUI.Panel.Main()
     if CleanTickets.ClData.ServerTickets then
         local admin_btn = vgui.Create("DButton", frame)
         surface.SetFont("ct_TextFont")
-        local w, h = surface.GetTextSize("Admin Panel")
+        local w, h = surface.GetTextSize(CleanTickets.Lang.PANEL_TAB_ADMIN)
         admin_btn:SetSize(w + 20, 40)
         admin_btn:SetFont("ct_TextFont")
         admin_btn:SetTextColor(Color(255, 255, 255))
-        admin_btn:SetText("Admin Panel")
+        admin_btn:SetText(CleanTickets.Lang.PANEL_TAB_ADMIN)
         admin_btn:SetPos(active_panel:GetWide() - w - 40, 60)
         admin_btn.Paint = function(me, w, h)
             draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
-            if me:IsHovered() or (btn_selection == "Admin Panel") then -- Or selected
+            if me:IsHovered() or (btn_selection == CleanTickets.Lang.PANEL_TAB_ADMIN) then -- Or selected
                 local empty = 30
                 draw.RoundedBox(0, empty / 2, h - 3, w - empty, 3, CleanTickets.Config.AccentColor)
             end
         end
         admin_btn.DoClick = function()
-            btn_selection = "Admin Panel"
+            btn_selection = CleanTickets.Lang.PANEL_TAB_ADMIN
             active_panel:Clear()
             CleanTickets.GUI.AdminPanel.Main(active_panel)
         end

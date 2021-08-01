@@ -3,7 +3,7 @@
 CleanTickets.Config.InfoSound = "buttons/lightswitch2.wav"
 CleanTickets.Config.ErrorSound = "buttons/button10.wav"
 
--- Tickets
+-- Ticket Popup
 CleanTickets.Config.TicketSound = "buttons/lightswitch2.wav"
 CleanTickets.Config.dateformat = "%d/%m/%Y" -- see https://www.lua.org/pil/22.1.html
 CleanTickets.Config.timeformat = "%H:%M"
@@ -39,8 +39,8 @@ CleanTickets.Config.TabPanelBackgroundColor = Color(50, 50, 50,255)
 
 -- Create Ticket Tab
 CleanTickets.Config.MsgBoxColor = Color(70, 70, 70, 255)
-
-
+CleanTickets.Config.MaxAttachments = 3 -- max link that players can send to admin
+CleanTickets.Config.MaxDescCharacters = 200 -- max characters that can be send to admin (description)
 
 -- [SERVER] 
 

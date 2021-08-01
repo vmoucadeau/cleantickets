@@ -12,13 +12,11 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         surface.SetFont("ct_TextFont")
     end
 
-    local TopContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.TabPanelBackgroundColor, {["x"]=600, ["y"]=190}, nil, "", nil, 4, {0,0,0,0})
+    local TopContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.TabPanelBackgroundColor, {["x"]=600, ["y"]=160}, nil, "", nil, 4, {0,0,0,0})
 
-    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=550, ["y"]=190}, nil, "Description", nil, 2, {10,10,0,0})
+    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=550, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_DESCRIPTION, nil, 2, {10,10,0,0})
 
-    local PlayerListContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=200, ["y"]=190}, nil, "Select Players", nil, 3, {10,10,10,0})
-
-    local subject_table = {{"Subject", nil}}
+    local subject_table = {{CleanTickets.Lang.PANEL_SENDTICKET_SUBJECT, nil}}
     for i = 1, #CleanTickets.Config.SubjectsList do
         table.insert(subject_table, {CleanTickets.Config.SubjectsList[i], nil})
     end
@@ -29,6 +27,16 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
             SelectedSubject = value
         end
     end)
+
+    local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 90}, 1, {10,10,10,10}, nil, function(text)
+        Message = text
+    end, true, CleanTickets.Config.MaxDescCharacters)
+
+
+    
+    local PlayerListContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=200, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_SELECTPLAYERS, nil, 3, {10,10,10,0})
+
+    
 
     local players_table = {}
     for k, v in pairs(player.GetAll()) do
@@ -46,9 +54,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         fetchPlylist()
     end)
 
-    local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 110}, 4, {10,10,10,0}, nil, function(text)
-        Message = text
-    end)
+    
 
     
     local PlyList = vgui.Create("DScrollPanel", PlayerListContainer)
@@ -105,30 +111,36 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         end
     end
 
-    local AttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.MainFrameBackground, {["x"]=600, ["y"]=100}, nil, "Attachments", nil, 4, {10,10,10,0})
+    local AttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.MainFrameBackground, {["x"]=600, ["y"]=160}, nil, CleanTickets.Lang.PANEL_SENDTICKET_ATTACHMENTS, nil, 4, {10,10,10,0})
 
-    local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(AttachmentsContainer, CleanTickets.Config.MainFrameBackground, {["x"]=0, ["y"]=25}, nil, "", nil, 4, {10,25,10,0})
+    local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(AttachmentsContainer, CleanTickets.Config.MainFrameBackground, {["x"]=0, ["y"]=28}, nil, "", nil, 4, {10,25,10,0})
 
     local link = ""
-    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 25}, 2, {0,0,0,0}, nil, function(text)
+    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 630, ["y"] = 25}, 2, {0,0,0,0}, nil, function(text)
         link = text
     end)
 
-    local AddAttachementButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, "Add link", "ct_TextFont", {["x"] = 100, ["y"] = 25}, 2, {10,0,0,0}, nil, function()
+    local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK, "ct_TextFont", {["x"] = 100, ["y"] = 25}, 3, {10,0,0,0}, nil, function()
+        if string.len(link) == 0 then return end
+        if #attachments >= CleanTickets.Config.MaxAttachments then
+            CT_ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
+            return
+        end
         for k, v in pairs(attachments) do
             -- if(v[2] == data) then
-            if (v == value) then
+            if (v == link) then
                 return
             end
         end
         table.insert(attachments, link)
+        fetchAttachmentslist()
     end)
 
     local AttachmentsList = vgui.Create("DScrollPanel", AttachmentsContainer)
-    AttachmentsList:Dock(4)
+    AttachmentsList:Dock(1)
     AttachmentsList:DockMargin(10,10,10,10)
     AttachmentsList.Paint = function(self, w, h)
-        draw.RoundedBox(10, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
+        draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
     end
     local sbar = AttachmentsList:GetVBar()
     function sbar:Paint(w, h)
@@ -143,20 +155,44 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     function sbar.btnGrip:Paint(w, h)
         draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
     end
-    function AttachmentsContainer:DoClick()
-        local name = AttachmentsContainer:GetText()
-        for k, v in pairs(attachments) do
-            if v[1] == name then
-                table.remove(attachments, k)
-                break
+
+    function fetchAttachmentslist()
+        AttachmentsList:Clear()
+        for k, v in ipairs(attachments) do
+            local delbut = vgui.Create("DButton", AttachmentsList)
+            delbut:SetText(v)
+            delbut:SetFont("ct_TinyFont")
+            delbut:SetColor(Color(255, 255, 255))
+            delbut:Dock(4)
+            delbut:DockMargin(5, 5, 5, 0)
+            delbut.Paint = function(self, w, h)
+                if (self:IsHovered()) then
+                    draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
+                    draw.RoundedBox(8, 2, 2, w - 4, h - 4, CleanTickets.Config.MsgBoxColor)
+                else
+                    draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.MsgBoxColor)
+                end
             end
+            function delbut:DoClick()
+                local name = delbut:GetText()
+                for k, v in pairs(attachments) do
+                    if v == name then
+                        table.remove(attachments, k)
+                        break
+                    end
+                end
+                AttachmentsList:Clear()
+                fetchAttachmentslist()
+            end
+
+            AttachmentsList:Add(delbut)
         end
     end
 
     local sendbut = vgui.Create("DButton", panel)
     sendbut:SetSize(100, 40)
-    sendbut:SetPos(panel:GetWide() / 2 - sendbut:GetWide() / 2, panel:GetTall() - sendbut:GetTall()-20)
-    sendbut:SetText("Send")
+    sendbut:SetPos(panel:GetWide() / 2 - sendbut:GetWide() / 2, panel:GetTall() - sendbut:GetTall()-10)
+    sendbut:SetText(CleanTickets.Lang.PANEL_SENDTICKET_BTNSEND)
     sendbut:SetFont("ct_TextFont")
     sendbut:SetColor(CleanTickets.Config.TextColor)
     sendbut.Paint = function(self, w, h)
@@ -178,6 +214,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         local tabletosend = {
             ["players"] = SelectedPlayers,
             ["subject"] = SelectedSubject,
+            ["attachments"] = attachments,
             ["message"] = Message,
             ["status"] = "Open",
             ["date"] = os.date(CleanTickets.Config.dateformat),
