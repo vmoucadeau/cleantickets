@@ -4,13 +4,15 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     if ticketdata.isupdate then
         for k, v in pairs(CleanTickets.ClData.OnScreenTickets) do
             if v[2].id == ticketdata.id then
+                local ticket = v[1]
+
                 if ticketdata.status == "Closed" then
                     ticket:Close()
                     table.remove(CleanTickets.ClData.OnScreenTickets, k)
                     return
                 end
 
-                local ticket = v[1]
+                
 
                 
                 if ticketdata.status == "Taken" then
@@ -25,12 +27,12 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                     local claimLabel = vgui.Create("DButton", ticket)
                     claimLabel:SetSize(60, 20)
                     claimLabel:SetPos(ticket:GetWide() - claimLabel:GetWide() - 40, 7.999)
-                    claimLabel:SetFont("ct_TinyFont")
-                    claimLabel:SetText("Taken")
-                    claimLabel:SetTooltip("Admin: " .. ticketdata.admin.name)
+                    claimLabel:SetFont("CleanTickets_Font18")
+                    claimLabel:SetText(CleanTickets.Lang.TICKETSTATUS_TAKEN)
+                    claimLabel:SetTooltip(CleanTickets.Lang.TICKET_TAKENBY .. ticketdata.admin.name)
                     claimLabel:SetColor(Color(255, 255, 255))
                     claimLabel.Paint = function(s, w, h)
-                        draw.RoundedBox(7, 0, 0, w, h, Color(39, 174, 96))
+                        draw.RoundedBox(8, 0, 0, w, h, Color(39, 174, 96))
                     end
                 end
 
@@ -81,7 +83,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         else
             name_to_display = sender:GetName()
         end
-        draw.SimpleText(name_to_display, "ct_TextFont", 10, 5, Color(255, 255, 255))
+        draw.SimpleText(name_to_display, "CleanTickets_Font25", 10, 5, Color(255, 255, 255))
         CleanTickets.GUI.Utils.DrawLine(0, 35, w, 35, Color(255, 255, 255, 255))
     end
 
@@ -89,20 +91,12 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     CloseButton:SetPos(frame:GetWide() - 30, 7)
     CloseButton:SetSize(20, 20)
     CloseButton:SetText("")
-    CloseButton:SetTooltip(CleanTickets.Lang.Close)
+    CloseButton:SetTooltip(CleanTickets.Lang.BTN_CLOSE)
     CloseButton.DoClick = function()
-        if ticketdata.status == "Taken" and v.admin then
-            if v.admin.steamid == LocalPlayer():SteamID64() then
-                CT_SendTable("ct_closeticket", ticketdata)
-            end
-        end
         frame:Close()
     end
     CloseButton.Paint = function(s, w, h)
         draw.RoundedBox(100, 0, 0, w, h, CleanTickets.Config.CloseButtonColor)
-        if(s:IsHovered()) then
-            draw.SimpleText("x", "CleanTickets_Font24", 5, 2, Color(255,255,255,255))
-        end
     end
 
     local TakeButton = vgui.Create("DButton", frame)
@@ -112,11 +106,10 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     TakeButton:SetColor(Color(255, 255, 255))
     TakeButton.DoClick = function()
         if ticketdata.status == "Taken" then
-            CT_ShowNotif("Ticket already claimed", 1, 2, nil)
             CleanTickets.GUI.Utils.DisplayChoicePopup({
                 ["x"] = frame:GetWide() + x + 40,
                 ["y"] = y
-            }, "Warning", "Someone has already taken this ticket :/", "Cancel", "Continue", nil, function()
+            }, CleanTickets.Lang.NOTIF_WARNING, CleanTickets.Lang.NOTIF_TICKET_CLAIMED, CleanTickets.Lang.BTN_CANCEL, CleanTickets.Lang.BTN_CONTINUE, nil, function()
                 CleanTickets.GUI.TicketsAdminButtons(frame, ticketdata)
             end)
         else
@@ -129,12 +122,12 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         else
             draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true)
         end
-        surface.SetFont("ct_TextFont")
+        surface.SetFont("CleanTickets_Font25")
         local w1, h1 = surface.GetTextSize("Take")
-        draw.SimpleText("Take", "ct_TextFont", w / 2, h / 2 - h1 / 2 - 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER,
+        draw.SimpleText("Take", "CleanTickets_Font25", w / 2, h / 2 - h1 / 2 - 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER,
             TEXT_ALIGN_CENTER)
         local w2, h2 = surface.GetTextSize("Ticket")
-        draw.SimpleText("Ticket", "ct_TextFont", w / 2, h / 2 + h2 / 2 - 5, Color(255, 255, 255, 255),
+        draw.SimpleText("Ticket", "CleanTickets_Font25", w / 2, h / 2 + h2 / 2 - 5, Color(255, 255, 255, 255),
             TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
@@ -143,15 +136,22 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     local wc, hc = ticketcontent:GetPos()
     ticketcontent:SetSize(frame:GetWide() - 100, frame:GetTall() - hc)
     function ticketcontent:PerformLayout()
-        self:SetFontInternal("ct_MedFont")
+        self:SetFontInternal("CleanTickets_Font22")
         self:SetFGColor(255, 255, 255, 255)
     end
-    ticketcontent:AppendText("Reason: " .. ticketdata["subject"] .. "\nMessage: ")
-    ticketcontent:AppendText(ticketdata["message"])
+    ticketcontent:AppendText(CleanTickets.Lang.TICKET_SUBJECT .. ticketdata["subject"] .. "\n")
+    ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. ticketdata["message"])
     if next(ticketdata["players"]) then
-        ticketcontent:AppendText("\nSelected players:\n")
+        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_SELECTEDPLAYER .. "\n")
         for k, v in pairs(ticketdata["players"]) do
             ticketcontent:AppendText("   - " .. v[1] .. "\n")
+        end
+
+    end
+    if next(ticketdata["attachments"]) then
+        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_ATTACHMENTS .. "\n")
+        for k, v in pairs(ticketdata["attachments"]) do
+            ticketcontent:AppendText("   - " .. v .. "\n")
         end
 
     end
@@ -183,14 +183,14 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     local GotoButton = vgui.Create("DButton", ticket)
     GotoButton:SetPos(ticket:GetWide()-100, 36)
     GotoButton:SetSize(100, 23)
-    GotoButton:SetText("Goto")
-    GotoButton:SetFont("ct_MedFont")
+    GotoButton:SetText(CleanTickets.Lang.TICKET_BUT_GOTO)
+    GotoButton:SetFont("CleanTickets_Font22")
     GotoButton:SetColor(Color(255,255,255))
     GotoButton.DoClick = function()
         local command = [["ulx goto $]]..sender:SteamID()..[["]]
         LocalPlayer():ConCommand(command)
         if CleanTickets.Config.TicketNotifs then
-            CT_RequestNotif(sender, LocalPlayer():GetName() .. " is teleporting to you", 0, 2, nil)
+            CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_GOTO, LocalPlayer():GetName()), 0, 2, nil)
         end
     end
     GotoButton.Paint = function(self, w, h)
@@ -202,14 +202,14 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     local TpButton = vgui.Create("DButton", ticket)
     TpButton:SetPos(ticket:GetWide()-100, 59)
     TpButton:SetSize(100, 23)
-    TpButton:SetText("Teleport")
-    TpButton:SetFont("ct_MedFont")
+    TpButton:SetText(CleanTickets.Lang.TICKET_BUT_TELEPORT)
+    TpButton:SetFont("CleanTickets_Font22")
     TpButton:SetColor(Color(255,255,255))
     TpButton.DoClick = function()
         local command = [["ulx teleport $]]..sender:SteamID()..[["]]
         LocalPlayer():ConCommand(command)
         if CleanTickets.Config.TicketNotifs then
-            CT_RequestNotif(sender, "You have been teleported by " .. LocalPlayer():GetName(), 0, 2, nil)
+            CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
         end
     end
     TpButton.Paint = function(self, w, h)
@@ -220,8 +220,8 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     local SpecButton = vgui.Create("DButton", ticket)
     SpecButton:SetPos(ticket:GetWide()-100, 82)
     SpecButton:SetSize(100, 23)
-    SpecButton:SetText("Spectate")
-    SpecButton:SetFont("ct_MedFont")
+    SpecButton:SetText(CleanTickets.Lang.TICKET_BUT_SPECTATE)
+    SpecButton:SetFont("CleanTickets_Font22")
     SpecButton:SetColor(Color(255,255,255))
     SpecButton.DoClick = function()
         local command = [["ulx spectate $]]..sender:SteamID()..[["]]
@@ -236,23 +236,23 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     local FreezeButton = vgui.Create("DButton", ticket)
     FreezeButton:SetPos(ticket:GetWide()-100, 105)
     FreezeButton:SetSize(100, 23)
-    FreezeButton:SetText("Freeze")
-    FreezeButton:SetFont("ct_MedFont")
+    FreezeButton:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
+    FreezeButton:SetFont("CleanTickets_Font22")
     FreezeButton:SetColor(Color(255,255,255))
     FreezeButton.DoClick = function(self)
-        if self:GetText() == "Freeze" then
+        if self:GetText() == CleanTickets.Lang.TICKET_BUT_FREEZE then
             local command = [["ulx freeze $]]..sender:SteamID()..[["]]
-            self:SetText("Unfreeze")
+            self:SetText(CleanTickets.Lang.TICKET_BUT_UNFREEZE)
             LocalPlayer():ConCommand(command)
             if CleanTickets.Config.TicketNotifs then
-                CT_RequestNotif(sender, "You have been frozen by " .. LocalPlayer():GetName(), 0, 2, nil)
+                CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_FREEZE, LocalPlayer():GetName()), 0, 2, nil)
             end
         else
             local command = [["ulx unfreeze $]]..sender:SteamID()..[["]]
-            self:SetText("Freeze")
+            self:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
             LocalPlayer():ConCommand(command)
             if CleanTickets.Config.TicketNotifs then
-                CT_RequestNotif(sender, "You have been unfrozen by " .. LocalPlayer():GetName(), 0, 2, nil)
+                CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_UNFREEZE, LocalPlayer():GetName()), 0, 2, nil)
             end
         end
         
@@ -265,8 +265,8 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     local MoreButton = vgui.Create("DButton", ticket)
     MoreButton:SetPos(ticket:GetWide()-100, 128)
     MoreButton:SetSize(100, 23)
-    MoreButton:SetText("More")
-    MoreButton:SetFont("ct_MedFont")
+    MoreButton:SetText(CleanTickets.Lang.TICKET_BUT_MORE)
+    MoreButton:SetFont("CleanTickets_Font22")
     MoreButton:SetColor(Color(255,255,255))
     MoreButton.DoClick = function()
         -- frame:Close()

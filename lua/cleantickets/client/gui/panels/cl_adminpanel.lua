@@ -3,11 +3,11 @@ CleanTickets.GUI.AdminPanel = {}
 function CleanTickets.GUI.AdminPanel.Main(active_panel)
     local admintabstable = {
         [1] = {
-            name = "ALL TICKETS", 
+            name = CleanTickets.Lang.PANEL_ADMIN_ALLTICKETS, 
             panel = CleanTickets.GUI.AdminPanel.AllTickets
         },
         [2] = {
-            name = "STATISTICS", 
+            name = CleanTickets.Lang.PANEL_ADMIN_STATS, 
             panel = CleanTickets.GUI.AdminPanel.Statistics
         }
 
@@ -39,11 +39,11 @@ function CleanTickets.GUI.AdminPanel.Main(active_panel)
     for k, v in ipairs(admintabstable) do
 
         local btn = vgui.Create("DButton", AdminPanel)
-        surface.SetFont("ct_MedFont")
+        surface.SetFont("CleanTickets_Font22")
         local w, h = surface.GetTextSize(v.name)
         tabsbarsize = tabsbarsize + w + 25
         btn:SetSize(w + 25, 30)
-        btn:SetFont("ct_MedFont")
+        btn:SetFont("CleanTickets_Font22")
         btn:SetTextColor(Color(255, 255, 255))
         btn:SetText(v.name)
         btn:SetPos(ScrW() * 0.4, 10)
@@ -85,8 +85,8 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
             local bt_CloseTicket = vgui.Create("DButton", item_panel)
             bt_CloseTicket:SetPos(item_panel:GetWide() - 100, 128)
             bt_CloseTicket:SetSize(100, 23)
-            bt_CloseTicket:SetText("Close")
-            bt_CloseTicket:SetFont("ct_MedFont")
+            bt_CloseTicket:SetText(CleanTickets.Lang.TICKET_BUT_CLOSE)
+            bt_CloseTicket:SetFont("CleanTickets_Font22")
             bt_CloseTicket:SetColor(Color(255, 255, 255))
             bt_CloseTicket.DoClick = function()
                 CT_SendTable("ct_closeticket", item_data)
@@ -106,8 +106,8 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
             local bt_DeleteTicket = vgui.Create("DButton", item_panel)
             bt_DeleteTicket:SetPos(item_panel:GetWide() - 100, 128)
             bt_DeleteTicket:SetSize(100, 23)
-            bt_DeleteTicket:SetText("Delete")
-            bt_DeleteTicket:SetFont("ct_MedFont")
+            bt_DeleteTicket:SetText(CleanTickets.Lang.TICKET_BUT_DELETE)
+            bt_DeleteTicket:SetFont("CleanTickets_Font22")
             bt_DeleteTicket:SetColor(Color(255, 255, 255))
             bt_DeleteTicket.DoClick = function()
                 CT_SendTable("ct_deleteticket", item_data)
@@ -131,7 +131,7 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
 end
 
 function CleanTickets.GUI.AdminPanel.Statistics(parent)
-    local ServerStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = 10}, "Server Statistics", nil)
+    local ServerStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = 10}, CleanTickets.Lang.PANEL_ADMIN_SERVERSTATS, nil)
 
     local ServerStats_list = vgui.Create("DHorizontalScroller", ServerStats)
     ServerStats_list:SetPos( 12, 30 )
@@ -166,11 +166,11 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
 
     local ServerStats_elements = {
         [1] = {
-            name = "Connected players",
+            name = CleanTickets.Lang.PANEL_ADMIN_CONNECTEDPLAYERS,
             data = {"number", player.GetCount()} 
         },
         [2] = {
-            name = "Connected admins",
+            name = CleanTickets.Lang.PANEL_ADMIN_CONNECTEDADMINS,
             data = {"function", function() 
                 local admins = 10
                 for k, v in pairs(player.GetHumans()) do
@@ -184,11 +184,11 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
             end} 
         },
         [3] = {
-            name = "Open Tickets",
+            name = CleanTickets.Lang.PANEL_ADMIN_OPENTICKETS,
             data = {"number", open_tickets} 
         },
         [4] = {
-            name = "Taken Tickets",
+            name = CleanTickets.Lang.PANEL_ADMIN_TAKENTICKETS,
             data = {"number", taken_tickets} 
         }
 
@@ -222,7 +222,7 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
         ServerStats_list:AddPanel(stat_item)
     end
 
-    local AdminStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = ServerStats:GetTall()+20}, "Personal Statistics", nil)
+    local AdminStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = ServerStats:GetTall()+20}, CleanTickets.Lang.PANEL_ADMIN_PLYSTATS, nil)
 end
 
 

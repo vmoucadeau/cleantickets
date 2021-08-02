@@ -41,7 +41,7 @@ function CleanTickets.GUI.Panel.Main()
 
         draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.MainFrameBackground)
         -- Frame title + line
-        draw.SimpleText("Clean Tickets", "ct_TitleFont", 10, 3, Color(255, 255, 255))
+        draw.SimpleText("Clean Tickets", "CleanTickets_Font35", 10, 3, Color(255, 255, 255))
         CleanTickets.GUI.Utils.DrawLine(0, 40, w, 40, Color(200, 200, 200, 255))
 
 
@@ -96,10 +96,10 @@ function CleanTickets.GUI.Panel.Main()
     for k, v in ipairs(tabstable) do
 
         local btn = vgui.Create("DButton", frame)
-        surface.SetFont("ct_TextFont")
+        surface.SetFont("CleanTickets_Font25")
         local w, h = surface.GetTextSize(v.name)
         btn:SetSize(w + 20, 40)
-        btn:SetFont("ct_TextFont")
+        btn:SetFont("CleanTickets_Font25")
         btn:SetTextColor(Color(255, 255, 255))
         btn:SetText(v.name)
         btn:SetPos(ScrW() * 0.4, 10)
@@ -123,10 +123,10 @@ function CleanTickets.GUI.Panel.Main()
 
     if CleanTickets.ClData.ServerTickets then
         local admin_btn = vgui.Create("DButton", frame)
-        surface.SetFont("ct_TextFont")
+        surface.SetFont("CleanTickets_Font25")
         local w, h = surface.GetTextSize(CleanTickets.Lang.PANEL_TAB_ADMIN)
         admin_btn:SetSize(w + 20, 40)
-        admin_btn:SetFont("ct_TextFont")
+        admin_btn:SetFont("CleanTickets_Font25")
         admin_btn:SetTextColor(Color(255, 255, 255))
         admin_btn:SetText(CleanTickets.Lang.PANEL_TAB_ADMIN)
         admin_btn:SetPos(active_panel:GetWide() - w - 40, 60)

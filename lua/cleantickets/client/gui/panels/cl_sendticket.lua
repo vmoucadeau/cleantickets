@@ -9,18 +9,18 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     panel:SetPos(0, 0)
 
     panel.Paint = function(self, w, h)
-        surface.SetFont("ct_TextFont")
+        surface.SetFont("CleanTickets_Font25")
     end
 
     local TopContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.TabPanelBackgroundColor, {["x"]=600, ["y"]=160}, nil, "", nil, 4, {0,0,0,0})
 
-    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=550, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_DESCRIPTION, nil, 2, {10,10,0,0})
+    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=550, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_DESCRIPTION, nil, 1, {10,10,0,0})
 
     local subject_table = {{CleanTickets.Lang.PANEL_SENDTICKET_SUBJECT, nil}}
     for i = 1, #CleanTickets.Config.SubjectsList do
         table.insert(subject_table, {CleanTickets.Config.SubjectsList[i], nil})
     end
-    local subjectdropdown = CleanTickets.GUI.Utils.DrawComboBox(DescriptionContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 100, ["y"] = 25}, subject_table, 4, {10,25,10,0}, function(index, value, data) 
+    local subjectdropdown = CleanTickets.GUI.Utils.DrawComboBox(DescriptionContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, subject_table, 4, {10,25,10,0}, function(index, value, data) 
         if(index == 1) then
             SelectedSubject = nil
         else
@@ -28,7 +28,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         end
     end)
 
-    local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 500, ["y"] = 90}, 1, {10,10,10,10}, nil, function(text)
+    local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 500, ["y"] = 90}, 1, {10,10,10,10}, nil, function(text)
         Message = text
     end, true, CleanTickets.Config.MaxDescCharacters)
 
@@ -43,7 +43,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         table.insert(players_table, {v:Name(), v:SteamID64()})
     end
 
-    local playersdropdown = CleanTickets.GUI.Utils.DrawComboBox(PlayerListContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 100, ["y"] = 25}, players_table, 4, {10,25,10,0}, function(index, value, data) 
+    local playersdropdown = CleanTickets.GUI.Utils.DrawComboBox(PlayerListContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, players_table, 4, {10,25,10,0}, function(index, value, data) 
         for k, v in pairs(SelectedPlayers) do
             -- if(v[2] == data) then
             if (v[1] == value) then
@@ -54,9 +54,6 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         fetchPlylist()
     end)
 
-    
-
-    
     local PlyList = vgui.Create("DScrollPanel", PlayerListContainer)
     PlyList:Dock(1)
     PlyList:DockMargin(10,10,10,10)
@@ -83,7 +80,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         for k, v in ipairs(SelectedPlayers) do
             local delbut = vgui.Create("DButton", panel)
             delbut:SetText(v[1])
-            delbut:SetFont("ct_TinyFont")
+            delbut:SetFont("CleanTickets_Font18")
             delbut:SetColor(Color(255, 255, 255))
             delbut:Dock(4)
             delbut:DockMargin(5, 5, 5, 5)
@@ -116,11 +113,11 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(AttachmentsContainer, CleanTickets.Config.MainFrameBackground, {["x"]=0, ["y"]=28}, nil, "", nil, 4, {10,25,10,0})
 
     local link = ""
-    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "ct_TextFont", {["x"] = 630, ["y"] = 25}, 2, {0,0,0,0}, nil, function(text)
+    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 630, ["y"] = 25}, 1, {0,0,0,0}, nil, function(text)
         link = text
     end)
 
-    local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK, "ct_TextFont", {["x"] = 100, ["y"] = 25}, 3, {10,0,0,0}, nil, function()
+    local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, 3, {10,0,0,0}, nil, function()
         if string.len(link) == 0 then return end
         if #attachments >= CleanTickets.Config.MaxAttachments then
             CT_ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
@@ -135,6 +132,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         table.insert(attachments, link)
         fetchAttachmentslist()
     end)
+    AddAttachmentButton:SizeToContentsX(10)
 
     local AttachmentsList = vgui.Create("DScrollPanel", AttachmentsContainer)
     AttachmentsList:Dock(1)
@@ -161,7 +159,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         for k, v in ipairs(attachments) do
             local delbut = vgui.Create("DButton", AttachmentsList)
             delbut:SetText(v)
-            delbut:SetFont("ct_TinyFont")
+            delbut:SetFont("CleanTickets_Font18")
             delbut:SetColor(Color(255, 255, 255))
             delbut:Dock(4)
             delbut:DockMargin(5, 5, 5, 0)
@@ -193,7 +191,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     sendbut:SetSize(100, 40)
     sendbut:SetPos(panel:GetWide() / 2 - sendbut:GetWide() / 2, panel:GetTall() - sendbut:GetTall()-10)
     sendbut:SetText(CleanTickets.Lang.PANEL_SENDTICKET_BTNSEND)
-    sendbut:SetFont("ct_TextFont")
+    sendbut:SetFont("CleanTickets_Font25")
     sendbut:SetColor(CleanTickets.Config.TextColor)
     sendbut.Paint = function(self, w, h)
         if (sendbut:IsHovered()) then

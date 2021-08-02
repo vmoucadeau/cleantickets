@@ -42,7 +42,7 @@ function CleanTickets.GUI.Utils.DrawContainer(parent, color, size, pos, title, p
         container.Paint = function(s,w, h)
             draw.RoundedBox(10, 0, 0, w, h, color)
             local wt, ht = surface.GetTextSize(title)
-            draw.SimpleText(title, "ct_TextFont", w/2, 10,
+            draw.SimpleText(title, "CleanTickets_Font25", w/2, 10,
                 Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
@@ -205,6 +205,7 @@ function CleanTickets.GUI.Utils.DrawButton(parent, text, font, size, dock, margi
     function button:DoClick()
         doclick()
     end
+    return button
 end
 
 
@@ -247,8 +248,8 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
     local filtersbutton = vgui.Create("DButton", filterspanel)
     filtersbutton:SetSize(filterspanel:GetWide(), 30)
     filtersbutton:SetPos(0,0)
-    filtersbutton:SetText("Filters")
-    filtersbutton:SetFont("ct_MedFont")
+    filtersbutton:SetText(CleanTickets.Lang.FILTERS)
+    filtersbutton:SetFont("CleanTickets_Font22")
     filtersbutton:SetColor(Color(255,255,255))
     filtersbutton.DoClick = function()
         if not filterspanelopen then
@@ -312,7 +313,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
             ticket_item:SetSize( listpanel:GetWide()/2 - 30, 150)
             ticket_item.Paint = function(s, w, h)
                 draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.MainFrameBackground)
-                draw.SimpleText(v.subject, "ct_TextFont", 10, 3, Color(255,255,255,255))
+                draw.SimpleText(v.subject, "CleanTickets_Font25", 10, 3, Color(255,255,255,255))
                 CleanTickets.GUI.Utils.DrawLine(0, 30, w, 30, Color(255,255,255))
             end
 
@@ -325,10 +326,10 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
                 status_color = Color(255,0,0)
             end
             local status_label = vgui.Create("DButton", ticket_item)
-            surface.SetFont("ct_TinyFont")
+            surface.SetFont("CleanTickets_Font18")
             status_label:SetSize(60, 18)
             status_label:SetPos(ticket_item:GetWide() - status_label:GetWide() - 10, 7.6)
-            status_label:SetFont("ct_TinyFont")
+            status_label:SetFont("CleanTickets_Font18")
             status_label:SetText(v.status)
             status_label:SetColor(Color(255,255,255))
             status_label.Paint = function(s, w, h)
@@ -344,23 +345,23 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
             ticketcontent:SetSize(ticket_item:GetWide() - 100, ticket_item:GetTall()-hc)
             
             function ticketcontent:PerformLayout()
-                self:SetFontInternal("ct_MedFont")
+                self:SetFontInternal("CleanTickets_Font22")
                 self:SetFGColor(255, 255, 255, 255) 
                 self:SetBGColor(255,255,255,0)
             end
-            ticketcontent:AppendText("Creator: " .. v.sender.name .. "\n")
-            ticketcontent:AppendText("Message: " .. v.message .. "\n")
-            ticketcontent:AppendText("Date: " .. v.date .. "\n")
-            ticketcontent:AppendText("Hour: " .. v.time .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_CREATOR .. v.sender.name .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. v.message .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DATE .. v.date .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_TIME .. v.time .. "\n")
             if next(v.players) then
-                ticketcontent:AppendText("Selected players:\n")
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_SELECTEDPLAYER .. "\n")
                 for k, v in pairs(v.players) do
                     ticketcontent:AppendText("   - "..v[1].."\n")
                 end
 
             end
             if v.admin then
-                ticketcontent:AppendText("Taken by: " .. v.admin.name)
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_TAKENBY .. v.admin.name)
             end
             
             ticketcontent.Paint = function(self, w, h)
@@ -401,7 +402,7 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
         element_dropdown:Dock(LEFT)
         element_dropdown:DockMargin(10,1,0,1)
         element_dropdown:SetColor(CleanTickets.Config.TextColor)
-        element_dropdown:SetFont("ct_MedFont")
+        element_dropdown:SetFont("CleanTickets_Font22")
         element_dropdown:SetSortItems(sortitems)
         element_dropdown.Paint = function(self, w, h)
             if (self:IsMenuOpen()) then
@@ -425,7 +426,7 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
         return element_container
     end
 
-    local status_element = filter_element(filters_list, "Status:", 0, function(element_dropdown) 
+    local status_element = filter_element(filters_list, CleanTickets.Lang.FILTER_STATUS, 0, function(element_dropdown) 
         element_dropdown:AddChoice("Open")
         element_dropdown:AddChoice("Taken")
         element_dropdown:AddChoice("Closed")
@@ -437,7 +438,7 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
     end, false)
 
     
-    local player_element = filter_element(filters_list, "Player:", 0, function(element_dropdown) 
+    local player_element = filter_element(filters_list, CleanTickets.Lang.FILTER_PLAYER, 0, function(element_dropdown) 
         for k, v in pairs(ticketslist) do
             if (element_dropdown:GetOptionTextByData(v.sender.steamid) == v.sender.steamid) then
                 element_dropdown:AddChoice(v.sender.name, v.sender.steamid)
@@ -450,7 +451,7 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
         end
     end, true)
 
-    local subject_element = filter_element(filters_list, "Subject:", 0, function(element_dropdown) 
+    local subject_element = filter_element(filters_list, CleanTickets.Lang.FILTER_SUBJECT, 0, function(element_dropdown) 
         for i = 1, #CleanTickets.Config.SubjectsList do
             element_dropdown:AddChoice(CleanTickets.Config.SubjectsList[i])
         end
@@ -461,7 +462,7 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
         end
     end, true)
 
-    local date_element = filter_element(filters_list, "Date:", 0, function(element_dropdown) 
+    local date_element = filter_element(filters_list, CleanTickets.Lang.FILTER_DATE, 0, function(element_dropdown) 
         for k, v in pairs(ticketslist) do
             if (element_dropdown:GetOptionTextByData(" " .. v.date) == " " .. v.date) then
                 element_dropdown:AddChoice(v.date, " " .. v.date)
@@ -507,7 +508,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     popup:SetTitle(" ")
     popup.Paint = function(self, w, h)
         draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.TicketBackground)
-        draw.SimpleText(title, "ct_TextFont", 10, 5, Color(255, 255, 255))
+        draw.SimpleText(title, "CleanTickets_Font25", 10, 5, Color(255, 255, 255))
         CleanTickets.GUI.Utils.DrawLine(0, 35, w, 35, Color(255, 255, 255, 255))
     end
 
@@ -516,7 +517,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     CloseButton:SetPos(popup:GetWide() - 30, 7)
     CloseButton:SetSize(20, 20)
     CloseButton:SetText("")
-    CloseButton:SetTooltip("Close")
+    CloseButton:SetTooltip(CleanTickets.Lang.BTN_CLOSE)
     CloseButton.DoClick = function()
         popup:Close()
         if onclose then
@@ -533,7 +534,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     local wc, hc = text:GetPos()
     text:SetSize(popup:GetWide(), popup:GetTall()-hc-40)
     function text:PerformLayout()
-        self:SetFontInternal("ct_MedFont")
+        self:SetFontInternal("CleanTickets_Font22")
         self:SetFGColor(255, 255, 255, 255) 
     end
     text:AppendText(content)
@@ -546,7 +547,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     CancelButton:SetPos(0, popup:GetTall()-40)
     CancelButton:SetSize(popup:GetWide()/2, 40)
     CancelButton:SetText(closetxt)
-    CancelButton:SetFont("ct_TextFont")
+    CancelButton:SetFont("CleanTickets_Font25")
     CancelButton:SetColor(Color(255,255,255))
     CancelButton.DoClick = function()
         popup:Close()
@@ -562,7 +563,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     ContinueButton:SetPos(popup:GetWide()/2, popup:GetTall()-40)
     ContinueButton:SetSize(popup:GetWide()/2, 40)
     ContinueButton:SetText(validtxt)
-    ContinueButton:SetFont("ct_TextFont")
+    ContinueButton:SetFont("CleanTickets_Font25")
     ContinueButton:SetColor(Color(255,255,255))
     ContinueButton.DoClick = function()
         popup:Close()
@@ -594,27 +595,3 @@ function CleanTickets.GUI.Utils.GenerateFonts(min, max, font, weight)
 end
 
 CleanTickets.GUI.Utils.GenerateFonts(12, 72, "Asap", 400)
-
-surface.CreateFont("ct_TitleFont", {
-    font = "Asap",
-    size = 35,
-    weight = 400
-})
-
-surface.CreateFont("ct_TextFont", {
-    font = "Asap",
-    size = 25,
-    weight = 400
-})
-
-surface.CreateFont("ct_TinyFont", {
-    font = "Asap",
-    size = 18,
-    weight = 400
-})
-
-surface.CreateFont("ct_MedFont", {
-    font = "Asap",
-    size = 22,
-    weight = 400
-})
