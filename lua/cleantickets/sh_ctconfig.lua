@@ -42,6 +42,11 @@ CleanTickets.Config.MsgBoxColor = Color(70, 70, 70, 255)
 CleanTickets.Config.MaxAttachments = 3 -- max link that players can send to admin
 CleanTickets.Config.MaxDescCharacters = 200 -- max characters that can be send to admin (description)
 
+-- Tickets Status Colors
+CleanTickets.Config.OpenColor = Color(40, 111, 81)
+CleanTickets.Config.TakenColor = Color(239, 142, 7)
+CleanTickets.Config.ClosedColor = Color(255, 0, 0)
+
 -- [SERVER] 
 
 CleanTickets.Config.Debug = true -- Admins can send tickets

@@ -61,17 +61,15 @@ function CleanTickets.GUI.Utils.DrawLabel(parent, text, font, size, pos, dock, m
 	label:SetFont(font)
 	label:SetText(text)
 	if size then
-		label:SetWide(size["x"])
-        label:SetTall(size["y"])
+		label:SetSize(size["x"], size["y"])
     else
         surface.SetFont(font)
         local w, h = surface.GetTextSize(text)
         label:SetSize(w, h)
     end
 
-	if pos then
-		label:SetPos(pos["x"], pos["y"])
-	end
+	label:SetPos(pos["x"] or 0, pos["y"] or 0)
+	
 	if sizetocontent then
 		if not size["x"] then
 			label:SizeToContentsX()
@@ -208,6 +206,22 @@ function CleanTickets.GUI.Utils.DrawButton(parent, text, font, size, dock, margi
     return button
 end
 
+function CleanTickets.GUI.Utils.GetTicketStatus(status)
+    local status_color
+    local status_text
+    if status == "Open" then
+        status_color = CleanTickets.Config.OpenColor
+        status_text = CleanTickets.Lang.TICKETSTATUS_OPEN
+    elseif status == "Taken" then
+        status_color = CleanTickets.Config.TakenColor
+        status_text = CleanTickets.Lang.TICKETSTATUS_TAKEN
+    else 
+        status_color = CleanTickets.Config.ClosedColor
+        status_text = CleanTickets.Lang.TICKETSTATUS_CLOSED
+    end
+
+    return {status_text, status_color}
+end
 
         ----------------------------------------------
         --                                          --
@@ -317,23 +331,17 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
                 CleanTickets.GUI.Utils.DrawLine(0, 30, w, 30, Color(255,255,255))
             end
 
-            local status_color
-            if v.status == "Open" then
-                status_color = Color(39,174,96)
-            elseif v.status == "Taken" then
-                status_color = CleanTickets.Config.AccentColor
-            else 
-                status_color = Color(255,0,0)
-            end
+            local status_data = CleanTickets.GUI.Utils.GetTicketStatus(v.status)
+
             local status_label = vgui.Create("DButton", ticket_item)
             surface.SetFont("CleanTickets_Font18")
             status_label:SetSize(60, 18)
             status_label:SetPos(ticket_item:GetWide() - status_label:GetWide() - 10, 7.6)
             status_label:SetFont("CleanTickets_Font18")
-            status_label:SetText(v.status)
+            status_label:SetText(status_data[1])
             status_label:SetColor(Color(255,255,255))
             status_label.Paint = function(s, w, h)
-                draw.RoundedBox(50, 0, 0, w, h, status_color)
+                draw.RoundedBox(8, 0, 0, w, h, status_data[2])
             end
 
             ticketbut(v, ticket_item)
