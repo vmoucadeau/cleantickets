@@ -18,10 +18,12 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                 if ticketdata.status == "Taken" then
                     if player.GetBySteamID64(ticketdata.admin.steamid) == LocalPlayer() then
 
-                        local takebut = ticket:GetChild(5)
+                        local contentpanel = ticket:GetChild(5)
+                        
+                        local takebut = contentpanel:GetChild(0)
                         takebut:Remove()
 
-                        CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
+                        CleanTickets.GUI.TicketsAdminButtons(contentpanel, ticketdata)
 
                     end
                     local claimLabel = vgui.Create("DButton", ticket)
@@ -30,9 +32,9 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                     claimLabel:SetFont("CleanTickets_Font18")
                     claimLabel:SetText(CleanTickets.Lang.TICKETSTATUS_TAKEN)
                     claimLabel:SetTooltip(CleanTickets.Lang.TICKET_TAKENBY .. ticketdata.admin.name)
-                    claimLabel:SetColor(Color(255, 255, 255))
+                    claimLabel:SetColor(CleanTickets.Config.TextColor)
                     claimLabel.Paint = function(s, w, h)
-                        draw.RoundedBox(8, 0, 0, w, h, Color(39, 174, 96))
+                        draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.TakenColor)
                     end
                 end
 
@@ -73,8 +75,10 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         end
     end
     frame.Paint = function(self, w, h)
-        -- Frame box	
-        draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.TicketBackground)
+        -- Frame box
+        draw.RoundedBox(16, 0, 0, w, h, CleanTickets.Config.TicketOutline)	
+        draw.RoundedBox(16, 1, 1, w-2, h-2, CleanTickets.Config.TicketBackground)
+        
         -- Frame title + line
         local maxnamelen = 17
         local name_to_display = ""
@@ -84,7 +88,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
             name_to_display = sender:GetName()
         end
         draw.SimpleText(name_to_display, "CleanTickets_Font25", 10, 5, Color(255, 255, 255))
-        CleanTickets.GUI.Utils.DrawLine(0, 35, w, 35, Color(255, 255, 255, 255))
+        CleanTickets.GUI.Utils.DrawLine(1, 35, w-1, 35, CleanTickets.Config.TicketOutline)
     end
 
     local CloseButton = vgui.Create("DButton", frame)
@@ -99,11 +103,16 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         draw.RoundedBox(100, 0, 0, w, h, CleanTickets.Config.CloseButtonColor)
     end
 
-    local TakeButton = vgui.Create("DButton", frame)
-    TakeButton:SetPos(frame:GetWide() - 100, 36)
-    TakeButton:SetSize(100, frame:GetTall() - 36)
+    local TicketContentContainer = CleanTickets.GUI.Utils.DrawContainer(frame, nil, {["x"] = frame:GetWide()-2, ["y"] = frame:GetTall()-37}, {["x"] = 1, ["y"] = 36}, "", function(s, w, h) end)
+
+    print(TicketContentContainer:GetSize())
+
+    local TakeButton = vgui.Create("DButton", TicketContentContainer)
+    TakeButton:SetWide(100)
     TakeButton:SetText("")
     TakeButton:SetColor(Color(255, 255, 255))
+    TakeButton:Dock(3)
+    TakeButton:DockMargin(0,0,0,0)
     TakeButton.DoClick = function()
         if ticketdata.status == "Taken" then
             CleanTickets.GUI.Utils.DisplayChoicePopup({
@@ -131,10 +140,9 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
             TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
-    local ticketcontent = vgui.Create("RichText", frame)
-    ticketcontent:SetPos(0, 36)
-    local wc, hc = ticketcontent:GetPos()
-    ticketcontent:SetSize(frame:GetWide() - 100, frame:GetTall() - hc)
+    local ticketcontent = vgui.Create("RichText", TicketContentContainer)
+    
+    ticketcontent:Dock(1)
     function ticketcontent:PerformLayout()
         self:SetFontInternal("CleanTickets_Font22")
         self:SetFGColor(255, 255, 255, 255)
@@ -156,7 +164,6 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
 
     end
     ticketcontent.Paint = function(self, w, h)
-        draw.RoundedBoxEx(15, 0, 0, w, h, Color(0, 0, 0, 0), false, false, true, false)
     end
 
     function frame:OnRemove()
@@ -178,11 +185,14 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
 end
 
 -- Admin buttons
-function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
+function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
     local sender = player.GetBySteamID64(ticketdata.sender.steamid)
-    local GotoButton = vgui.Create("DButton", ticket)
-    GotoButton:SetPos(ticket:GetWide()-100, 36)
-    GotoButton:SetSize(100, 23)
+
+    local AdminButContainer = CleanTickets.GUI.Utils.DrawContainer(contentcontainer, nil, {["x"] = 100, ["y"] = 0}, {["x"] = 0, ["y"] = 0}, "", function(s, w, h) end, 3, {0,0,0,0})
+
+    local GotoButton = vgui.Create("DButton", AdminButContainer)
+    GotoButton:SetTall(23)
+    GotoButton:Dock(4)
     GotoButton:SetText(CleanTickets.Lang.TICKET_BUT_GOTO)
     GotoButton:SetFont("CleanTickets_Font22")
     GotoButton:SetColor(Color(255,255,255))
@@ -199,9 +209,9 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
         end
     end
 
-    local TpButton = vgui.Create("DButton", ticket)
-    TpButton:SetPos(ticket:GetWide()-100, 59)
-    TpButton:SetSize(100, 23)
+    local TpButton = vgui.Create("DButton", AdminButContainer)
+    TpButton:SetTall(23)
+    TpButton:Dock(4)
     TpButton:SetText(CleanTickets.Lang.TICKET_BUT_TELEPORT)
     TpButton:SetFont("CleanTickets_Font22")
     TpButton:SetColor(Color(255,255,255))
@@ -217,9 +227,9 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
             draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
         end
     end
-    local SpecButton = vgui.Create("DButton", ticket)
-    SpecButton:SetPos(ticket:GetWide()-100, 82)
-    SpecButton:SetSize(100, 23)
+    local SpecButton = vgui.Create("DButton", AdminButContainer)
+    SpecButton:SetTall(23)
+    SpecButton:Dock(4)
     SpecButton:SetText(CleanTickets.Lang.TICKET_BUT_SPECTATE)
     SpecButton:SetFont("CleanTickets_Font22")
     SpecButton:SetColor(Color(255,255,255))
@@ -233,9 +243,9 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
         end
     end
     
-    local FreezeButton = vgui.Create("DButton", ticket)
-    FreezeButton:SetPos(ticket:GetWide()-100, 105)
-    FreezeButton:SetSize(100, 23)
+    local FreezeButton = vgui.Create("DButton", AdminButContainer)
+    FreezeButton:SetTall(23)
+    FreezeButton:Dock(4)
     FreezeButton:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
     FreezeButton:SetFont("CleanTickets_Font22")
     FreezeButton:SetColor(Color(255,255,255))
@@ -262,9 +272,9 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
             draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
         end
     end
-    local MoreButton = vgui.Create("DButton", ticket)
-    MoreButton:SetPos(ticket:GetWide()-100, 128)
-    MoreButton:SetSize(100, 23)
+    local MoreButton = vgui.Create("DButton", AdminButContainer)
+    MoreButton:SetTall(23)
+    MoreButton:Dock(4)
     MoreButton:SetText(CleanTickets.Lang.TICKET_BUT_MORE)
     MoreButton:SetFont("CleanTickets_Font22")
     MoreButton:SetColor(Color(255,255,255))
@@ -273,9 +283,7 @@ function CleanTickets.GUI.TicketsAdminButtons(ticket, ticketdata)
     end
     MoreButton.Paint = function(self, w, h)
         if(self:IsHovered()) then
-            draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true) 
-        else
-            draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,0,0,0), false, false, false, true) 
+            draw.RoundedBoxEx(48, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true) 
         end
     end
 end

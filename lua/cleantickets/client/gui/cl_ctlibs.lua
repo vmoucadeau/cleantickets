@@ -243,12 +243,14 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
         draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
     end
 
-    local item_list = vgui.Create( 'DPanelList', listpanel )
-    item_list:SetPos( 10, 10 )
-    item_list:SetSize( listpanel:GetWide() - 20, listpanel:GetTall() - 20 )
-	item_list:EnableHorizontal( true )
-	item_list:EnableVerticalScrollbar(true)
-    item_list:SetSpacing( 10 )
+    local list_scroll = vgui.Create("DScrollPanel", listpanel)
+    list_scroll:Dock(FILL)
+    list_scroll:DockMargin(5,5,5,5)
+
+    local item_list = vgui.Create( 'DIconLayout', list_scroll )
+    item_list:Dock( FILL )
+	item_list:SetSpaceY(10)
+    item_list:SetSpaceX(10)
 
     local filters_data = {
         status = "",
@@ -376,7 +378,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
                 draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,0,0,150), false, false, true, false)
             end
 
-            item_list:AddItem(ticket_item)
+            item_list:Add(ticket_item)
         end)
     end
     CleanTickets.GUI.TLP_RefreshTickets()

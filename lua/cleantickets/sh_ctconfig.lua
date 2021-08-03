@@ -23,7 +23,8 @@ CleanTickets.Config.TicketPos = {
     x = 25,
     y = 25
 }
-CleanTickets.Config.TicketBackground = Color(40, 40, 40, 230)
+CleanTickets.Config.TicketBackground = Color(40, 40, 40, 255)
+CleanTickets.Config.TicketOutline = Color(70, 70, 70, 255)
 CleanTickets.Config.MaxTicketsOnScreen = nil -- If nil then this value will be based on the height of the screen
 
 -- [GUI]
@@ -50,7 +51,7 @@ CleanTickets.Config.ClosedColor = Color(255, 0, 0)
 -- [SERVER] 
 
 CleanTickets.Config.Debug = true -- Admins can send tickets
-CleanTickets.Config.SendTicketDelay = 30 -- Time to wait to send a new ticket (spam protection)
+CleanTickets.Config.SendTicketDelay = 5 -- Time to wait to send a new ticket (spam protection)
 CleanTickets.Config.AdminGroups = { -- ULX Groups that will receive the tickets
     "superadmin",
     "admin"

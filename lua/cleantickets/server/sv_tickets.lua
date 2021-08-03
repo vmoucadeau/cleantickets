@@ -105,7 +105,7 @@ net.Receive("ct_sendticket", function(len, ply)
     
     table.insert(ticketslist, payload) 
     TicketBroadcast(payload)
-    timer.Create("ct_timer" .. ply:SteamID64(), 1, 0, function() timer.Destroy("ct_timer" .. ply:SteamID64()) end)
+    timer.Create("ct_timer" .. ply:SteamID64(), CleanTickets.Config.SendTicketDelay, 0, function() timer.Destroy("ct_timer" .. ply:SteamID64()) end)
 end)
 
 
@@ -130,54 +130,30 @@ net.Receive("ct_takerequest", function(len, ply)
     -- timer.Remove("ct_ticket_" .. payload.sender:SteamID64())
 end)
 
- 
-function CloseTicket(payload, closer)
+function DeleteTicket(payload, closer)
     payload.isupdate = true
     payload.status = "Closed"
+
     for k, v in pairs(ticketslist) do
         if v.id == payload.id then
             ticketslist[k] = payload
+            TicketBroadcast(payload)
+            table.remove(ticketslist, k)
             break
         end 
     end
     if closer:SteamID64() == payload.sender.steamid then
         SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been closed.", 0, 3, CleanTickets.Config.InfoSound)
     else
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been closed by " .. closer:GetName(), 0, 3, CleanTickets.Config.InfoSound)
+        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been closed by " .. closer, 0, 3, CleanTickets.Config.InfoSound)
     end
-    TicketBroadcast(payload)
-    -- timer.Remove("ct_ticket_" .. payload.sender:SteamID64())
+    WriteTicketsTable()
 end
 
 util.AddNetworkString("ct_closeticket")
 net.Receive("ct_closeticket", function(len, ply)
     local payload = net.ReadTable()
     if (not IsAdmin(ply)) or (ply:SteamID64() ~= payload.sender.steamid) then SendNotif(ply, "You don't have permission to do that.", 1, 2, CleanTickets.Config.ErrorSound) return end 
-    CloseTicket(payload, ply)
-end)
-
-function DeleteTicket(payload, closer)
-    for k, v in pairs(ticketslist) do
-        if v.id == payload.id then
-            table.remove(ticketslist, k)
-            break
-        end 
-    end
-    if closer:SteamID64() == payload.sender.steamid then
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been deleted.", 0, 3, CleanTickets.Config.InfoSound)
-    else
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been deleted by " .. closer, 0, 3, CleanTickets.Config.InfoSound)
-    end
-    WriteTicketsTable()
-    -- timer.Remove("ct_ticket_" .. payload.sender:SteamID64())
-end
-
-util.AddNetworkString("ct_deleteticket")
-net.Receive("ct_deleteticket", function(len, ply)
-    local payload = net.ReadTable()
-    if (not IsAdmin(ply)) or (ply:SteamID64() ~= payload.sender.steamid) then SendNotif(ply, "You don't have permission to do that.", 1, 2, CleanTickets.Config.ErrorSound) return end 
-    if payload.status ~= "Closed" then
-        CloseTicket(payload, ply)
-    end
     DeleteTicket(payload, ply)
 end)
+

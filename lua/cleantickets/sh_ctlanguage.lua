@@ -1,3 +1,4 @@
+
 local Language_EN = {
     -- [PANEL]
 
@@ -175,5 +176,5 @@ local Language_FR = {
     BTN_CLOSE = "Fermer",
 }
 
-CleanTickets.Lang = Language_FR
+CleanTickets.Lang = Language_EN
 

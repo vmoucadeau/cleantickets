@@ -91,32 +91,9 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
             bt_CloseTicket.DoClick = function()
                 CT_SendTable("ct_closeticket", item_data)
                 CT_GetTickets()
-                timer.Simple(1, function()
-                    CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.ServerTickets, parent, TicketsButtons, search_filters)
-                end)
+                item_panel:Remove()
             end
             bt_CloseTicket.Paint = function(self, w, h)
-                if (self:IsHovered()) then
-                    draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true)
-                else
-                    draw.RoundedBoxEx(15, 0, 0, w, h, Color(0, 0, 0, 0), false, false, false, true)
-                end
-            end
-        else
-            local bt_DeleteTicket = vgui.Create("DButton", item_panel)
-            bt_DeleteTicket:SetPos(item_panel:GetWide() - 100, 128)
-            bt_DeleteTicket:SetSize(100, 23)
-            bt_DeleteTicket:SetText(CleanTickets.Lang.TICKET_BUT_DELETE)
-            bt_DeleteTicket:SetFont("CleanTickets_Font22")
-            bt_DeleteTicket:SetColor(Color(255, 255, 255))
-            bt_DeleteTicket.DoClick = function()
-                CT_SendTable("ct_deleteticket", item_data)
-                CT_GetTickets()
-                timer.Simple(1, function()
-                    CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.ServerTickets, parent, TicketsButtons, search_filters)
-                end)
-            end
-            bt_DeleteTicket.Paint = function(self, w, h)
                 if (self:IsHovered()) then
                     draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true)
                 else
