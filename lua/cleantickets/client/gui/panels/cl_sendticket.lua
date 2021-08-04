@@ -20,13 +20,25 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     for i = 1, #CleanTickets.Config.SubjectsList do
         table.insert(subject_table, {CleanTickets.Config.SubjectsList[i], nil})
     end
-    local subjectdropdown = CleanTickets.GUI.Utils.DrawComboBox(DescriptionContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, subject_table, 4, {10,25,10,0}, function(index, value, data) 
-        if(index == 1) then
-            SelectedSubject = nil
-        else
-            SelectedSubject = value
+
+    local subjectdropdown = CleanTickets.GUI.Utils.DrawComboBox({
+        parent = DescriptionContainer,
+        textcolor = CleanTickets.Config.TextColor,
+        font = "CleanTickets_Font25",
+        items = subject_table,
+        size = {y=25},
+        dock = 4,
+        margin = {10,25,10,0},
+        sortitems = false,
+        onselect = function(index, value, data)
+            if(index == 1) then
+                SelectedSubject = nil
+            else
+                SelectedSubject = value
+            end
         end
-    end)
+        
+    })
 
     local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 500, ["y"] = 90}, 1, {10,10,10,10}, nil, function(text)
         Message = text
@@ -43,16 +55,26 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         table.insert(players_table, {v:Name(), v:SteamID64()})
     end
 
-    local playersdropdown = CleanTickets.GUI.Utils.DrawComboBox(PlayerListContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, players_table, 4, {10,25,10,0}, function(index, value, data) 
-        for k, v in pairs(SelectedPlayers) do
-            -- if(v[2] == data) then
-            if (v[1] == value) then
-                return
+    local playersdropdown = CleanTickets.GUI.Utils.DrawComboBox({
+        parent = PlayerListContainer,
+        textcolor = CleanTickets.Config.TextColor,
+        font = "CleanTickets_Font25",
+        items = players_table,
+        size = {y=25},
+        dock = 4,
+        margin = {10,25,10,0},
+        onselect = function(index, value, data)
+            for k, v in pairs(SelectedPlayers) do
+                -- if(v[2] == data) then
+                if (v[1] == value) then
+                    return
+                end
             end
+            table.insert(SelectedPlayers, {value, data})
+            fetchPlylist()
         end
-        table.insert(SelectedPlayers, {value, data})
-        fetchPlylist()
-    end)
+    })
+
 
     local PlyList = vgui.Create("DScrollPanel", PlayerListContainer)
     PlyList:Dock(1)
@@ -120,7 +142,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, 3, {10,0,0,0}, nil, function()
         if string.len(link) == 0 then return end
         if #attachments >= CleanTickets.Config.MaxAttachments then
-            CT_ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
+            CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
             return
         end
         for k, v in pairs(attachments) do
@@ -202,11 +224,11 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     end
     function sendbut:DoClick(clr, btn)
         if (SelectedSubject == nil) then
-            CT_ShowNotif("You need to chose a subject", 1, 2, nil)
+            CleanTickets.ClFuncs.ShowNotif("You need to chose a subject", 1, 2, nil)
             return
         end
         if (Message == "") then
-            CT_ShowNotif("You need enter a message", 1, 2, nil)
+            CleanTickets.ClFuncs.ShowNotif("You need enter a message", 1, 2, nil)
             return
         end
         local tabletosend = {
@@ -218,8 +240,8 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
             ["date"] = os.date(CleanTickets.Config.dateformat),
             ["time"] = os.date(CleanTickets.Config.timeformat)
         }
-        CT_SendTable("ct_sendticket", tabletosend)
-        CT_GetTickets()
+        CleanTickets.ClFuncs.SendTable("ct_sendticket", tabletosend)
+        CleanTickets.ClFuncs.GetTickets()
     end
 
     return panel

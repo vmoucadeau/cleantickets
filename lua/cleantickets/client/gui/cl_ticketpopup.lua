@@ -68,7 +68,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     end)
     -- Animate for 0.5 second
     anim:Start(0.5)
-    CT_ShowNotif(nil, nil, nil, CleanTickets.Config.TicketSound)
+    CleanTickets.ClFuncs.ShowNotif(nil, nil, nil, CleanTickets.Config.TicketSound)
     frame.Think = function(self)
         if anim:Active() then
             anim:Run()
@@ -122,7 +122,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                 CleanTickets.GUI.TicketsAdminButtons(frame, ticketdata)
             end)
         else
-            CT_SendTable("ct_takerequest", ticketdata)
+            CleanTickets.ClFuncs.SendTable("ct_takerequest", ticketdata)
         end
     end
     TakeButton.Paint = function(s, w, h)
@@ -200,7 +200,7 @@ function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
         local command = [["ulx goto $]]..sender:SteamID()..[["]]
         LocalPlayer():ConCommand(command)
         if CleanTickets.Config.TicketNotifs then
-            CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_GOTO, LocalPlayer():GetName()), 0, 2, nil)
+            CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_GOTO, LocalPlayer():GetName()), 0, 2, nil)
         end
     end
     GotoButton.Paint = function(self, w, h)
@@ -219,7 +219,7 @@ function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
         local command = [["ulx teleport $]]..sender:SteamID()..[["]]
         LocalPlayer():ConCommand(command)
         if CleanTickets.Config.TicketNotifs then
-            CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
+            CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
         end
     end
     TpButton.Paint = function(self, w, h)
@@ -255,14 +255,14 @@ function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
             self:SetText(CleanTickets.Lang.TICKET_BUT_UNFREEZE)
             LocalPlayer():ConCommand(command)
             if CleanTickets.Config.TicketNotifs then
-                CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_FREEZE, LocalPlayer():GetName()), 0, 2, nil)
+                CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_FREEZE, LocalPlayer():GetName()), 0, 2, nil)
             end
         else
             local command = [["ulx unfreeze $]]..sender:SteamID()..[["]]
             self:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
             LocalPlayer():ConCommand(command)
             if CleanTickets.Config.TicketNotifs then
-                CT_RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_UNFREEZE, LocalPlayer():GetName()), 0, 2, nil)
+                CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_UNFREEZE, LocalPlayer():GetName()), 0, 2, nil)
             end
         end
         

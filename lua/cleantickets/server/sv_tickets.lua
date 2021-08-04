@@ -1,17 +1,17 @@
-ticketslist = {}
+local ticketslist = {}
 
 -- Console debug
-function CT_LogInConsole(msg)
+local function CT_LogInConsole(msg)
 	MsgN("[Clean Tickets]: " .. msg)
 end
 
-function SendTable(ply, table, network)
+local function SendTable(ply, table, network)
     net.Start(network)
     net.WriteTable(table)
     net.Send(ply)
 end
 
-function IsAdmin(ply)
+local function IsAdmin(ply)
     for k, v in pairs(CleanTickets.Config.AdminGroups) do
         if (ply:GetUserGroup() == v) then
             return true
@@ -23,7 +23,7 @@ end
 -- Notifs
 util.AddNetworkString("ct_notif")
 
-function SendNotif(ply, text, type, len, sound)
+local function SendNotif(ply, text, type, len, sound)
     local notiftable = {["text"] = text, ["type"] = type, ["len"] = len, ["sound"] = sound}
     SendTable(ply, notiftable, "ct_notif")
 end
@@ -34,19 +34,19 @@ net.Receive("ct_notif", function(len, ply)
         local notiftable = net.ReadTable()
         SendNotif(notiftable.receiver, notiftable.msg, notiftable.type, notiftable.len, notiftable.sound)
     else 
-        SendNotif(ply, "You need to be admin to do that.", 0, 2, nil)
+        SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 0, 2, nil)
     end
 end)
 
 
 -- DATA
 
-function GetTicketsTable() 
+local function GetTicketsTable() 
     CT_LogInConsole("Reading data...")
 	ticketslist = util.JSONToTable(file.Read("cleantickets/ct_data.txt","DATA"))
 end
 
-function WriteTicketsTable()
+local function WriteTicketsTable()
     CT_LogInConsole("Saving data...")
 	file.Write("cleantickets/ct_data.txt",util.TableToJSON(ticketslist))
 end 
@@ -61,7 +61,7 @@ end
    
  
 util.AddNetworkString("ct_getdata")
-function GetPlayerTickets(steamid)
+local function GetPlayerTickets(steamid)
     local ply_tickets = {}
     for k, v in pairs(ticketslist) do
         if v.sender.steamid == steamid then
@@ -82,7 +82,7 @@ end)
 -- Tickets gestion
  
 util.AddNetworkString("ct_showticket")
-function TicketBroadcast(ticketdata)
+local function TicketBroadcast(ticketdata)
     for k, v in pairs(player.GetHumans()) do
         if(IsAdmin(v)) then
             SendTable(v, ticketdata, "ct_showticket")
@@ -93,8 +93,8 @@ end
 
 util.AddNetworkString("ct_sendticket")
 net.Receive("ct_sendticket", function(len, ply)
-    if(IsAdmin(ply) and not CleanTickets.Config.Debug) then SendNotif(ply, "You can't send tickets because you're an admin.", 1, 2, CleanTickets.Config.ErrorSound) return end 
-    if timer.Exists("ct_timer"..ply:SteamID64()) then SendNotif(ply, "You need to wait 30s for sending a new ticket.", 1, 2, CleanTickets.Config.ErrorSound) return end
+    if(IsAdmin(ply) and not CleanTickets.Config.Debug) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
+    if timer.Exists("ct_timer"..ply:SteamID64()) then SendNotif(ply, string.format(CleanTickets.Lang.NOTIF_NEEDWAIT, CleanTickets.Config.SendTicketDelay), 1, 2, CleanTickets.Config.ErrorSound) return end
     local payload = net.ReadTable() 
     payload.id = #ticketslist
     payload.status = "Open"
@@ -111,7 +111,7 @@ end)
 
 util.AddNetworkString("ct_takerequest") 
 net.Receive("ct_takerequest", function(len, ply)
-    if not IsAdmin(ply) then SendNotif(ply, "You don't have permission to do that.", 1, 2, CleanTickets.Config.ErrorSound) return end 
+    if not IsAdmin(ply) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
     local payload = net.ReadTable()
     payload.status = "Taken"
     payload.admin = {
@@ -125,12 +125,12 @@ net.Receive("ct_takerequest", function(len, ply)
             break
         end
     end
-    SendNotif(player.GetBySteamID64(payload.sender.steamid), ply:GetName().." took care of your request.", 0, 3, CleanTickets.Config.InfoSound)
+    SendNotif(player.GetBySteamID64(payload.sender.steamid), string.format(CleanTickets.Lang.NOTIF_TICKET_TAKEN, ply:GetName()), 0, 3, CleanTickets.Config.InfoSound)
     TicketBroadcast(payload)
     -- timer.Remove("ct_ticket_" .. payload.sender:SteamID64())
 end)
 
-function DeleteTicket(payload, closer)
+local function DeleteTicket(payload, closer)
     payload.isupdate = true
     payload.status = "Closed"
 
@@ -143,9 +143,9 @@ function DeleteTicket(payload, closer)
         end 
     end
     if closer:SteamID64() == payload.sender.steamid then
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been closed.", 0, 3, CleanTickets.Config.InfoSound)
+        SendNotif(player.GetBySteamID64(payload.sender.steamid), CleanTickets.Lang.NOTIF_TICKETCLOSED, 0, 3, CleanTickets.Config.InfoSound)
     else
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), "Your ticket has been closed by " .. closer, 0, 3, CleanTickets.Config.InfoSound)
+        SendNotif(player.GetBySteamID64(payload.sender.steamid), string.format(CleanTickets.Lang.NOTIF_TICKETCLOSEDBY, close:GetName()), 0, 3, CleanTickets.Config.InfoSound)
     end
     WriteTicketsTable()
 end
@@ -153,7 +153,7 @@ end
 util.AddNetworkString("ct_closeticket")
 net.Receive("ct_closeticket", function(len, ply)
     local payload = net.ReadTable()
-    if (not IsAdmin(ply)) or (ply:SteamID64() ~= payload.sender.steamid) then SendNotif(ply, "You don't have permission to do that.", 1, 2, CleanTickets.Config.ErrorSound) return end 
+    if (not IsAdmin(ply)) or (ply:SteamID64() ~= payload.sender.steamid) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
     DeleteTicket(payload, ply)
 end)
 

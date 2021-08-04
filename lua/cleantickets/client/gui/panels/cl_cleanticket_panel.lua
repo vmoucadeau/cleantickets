@@ -121,7 +121,7 @@ function CleanTickets.GUI.Panel.Main()
         end
     end
 
-    if CleanTickets.ClData.ServerTickets then
+    if CleanTickets.ClFuncs.IsAdmin() then
         local admin_btn = vgui.Create("DButton", frame)
         surface.SetFont("CleanTickets_Font25")
         local w, h = surface.GetTextSize(CleanTickets.Lang.PANEL_TAB_ADMIN)

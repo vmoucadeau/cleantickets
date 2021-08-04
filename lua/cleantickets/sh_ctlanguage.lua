@@ -76,6 +76,10 @@ local Language_EN = {
     NOTIF_UNFREEZE = "You've been unfrozen by %s.",
     NOTIF_DELETE = "Ticket deleted.",
     NOTIF_NOTADMIN = "You don't have permission to do this.",
+    NOTIF_NEEDWAIT = "You need to wait %s for sending a new ticket.",
+    NOTIF_TICKET_TAKEN = "%s took care of your request",
+    NOTIF_TICKETCLOSED = "Ticket closed.",
+    NOTIF_TICKETCLOSEDBY = "Your ticket has been closed by %s.",
     NOTIF_WARNING = "Warning",
     
     -- [POPUP TICKET CLAIMED]
@@ -164,6 +168,10 @@ local Language_FR = {
     NOTIF_UNFREEZE = "Vous avez été dégelé par %s.",
     NOTIF_DELETE = "Ticket supprimé.",
     NOTIF_NOTADMIN = "Vous n'avez pas la permission d'effectuer cette action.",
+    NOTIF_NEEDWAIT = "Vous devez attendre %s pour envoyer un nouveau ticket.",
+    NOTIF_TICKET_TAKEN = "%s a pris en charge votre requête.",
+    NOTIF_TICKETCLOSED = "Ticket fermé.",
+    NOTIF_TICKETCLOSEDBY = "Votre ticket a été fermé par %s.",
     NOTIF_WARNING = "Attention",
     
     -- [POPUP TICKET CLAIMED]

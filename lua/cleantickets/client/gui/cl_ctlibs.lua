@@ -85,22 +85,43 @@ function CleanTickets.GUI.Utils.DrawLabel(parent, text, font, size, pos, dock, m
 	return label
 end
 
+--[[
+    COMBO BOX
 
-function CleanTickets.GUI.Utils.DrawComboBox(parent, color, font, size, items, dock, margin, onselect, paint)
-    local combo = vgui.Create( "DComboBox", parent )
+    Settings arrangement :
+        settings.parent
+        settings.textcolor
+        settings.font
+        settings.size
+        settings.pos
+        settings.dock
+        settings.margin
+        settings.items
+        settings.onselect
+        settings.paint
+        settings.sortitems
+
+]]
+
+
+function CleanTickets.GUI.Utils.DrawComboBox(settings)
+    local combo = vgui.Create( "DComboBox", settings.parent )
     
-    combo:SetColor(color)
-    combo:SetFont(font)
-    combo:SetSize(size["x"] or 0, size["y"] or 0)
-    if dock then
-        combo:Dock(dock)
-        if margin then
-            combo:DockMargin(margin[1], margin[2], margin[3], margin[4])
+    combo:SetColor(settings.textcolor)
+    combo:SetFont(settings.font)
+    combo:SetSize(settings.size["x"] or 0, settings.size["y"] or 0)
+    if(settings.sortitems ~= nil) then
+        combo:SetSortItems(settings.sortitems)
+    end
+    if settings.dock then
+        combo:Dock(settings.dock)
+        if settings.margin then
+            combo:DockMargin(settings.margin[1], settings.margin[2], settings.margin[3], settings.margin[4])
         end
     end
 
-    if paint then
-        combo.Paint = paint
+    if settings.paint then
+        combo.Paint = settings.paint
     else
         combo.Paint = function(s,w, h)
             if (s:IsMenuOpen()) then
@@ -111,14 +132,14 @@ function CleanTickets.GUI.Utils.DrawComboBox(parent, color, font, size, items, d
         end
     end
 
-    for i = 1, #items do
-        combo:AddChoice(items[i][1], items[i][2] or nil)
+    for i = 1, #settings.items do
+        combo:AddChoice(settings.items[i][1], settings.items[i][2] or nil)
     end
 
     combo:ChooseOptionID(1)
     
     function combo:OnSelect(index, value, data)
-        onselect(index, value, data)
+        settings.onselect(index, value, data)
     end
 
     return combo
@@ -165,7 +186,7 @@ function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, mar
     function textbox:OnValueChange(value)
         if maxcharacters and string.len(value) == maxcharacters then
             textbox.AllowInput = function(s, val) return true end
-            CT_ShowNotif(CleanTickets.Lang.PANEL_TEXTBOXLIMIT, 0, 3, nil)
+            CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.PANEL_TEXTBOXLIMIT, 0, 3, nil)
         else
             textbox.AllowInput = function(s, val) return false end
         end
