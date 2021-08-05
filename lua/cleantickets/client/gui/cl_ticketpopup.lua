@@ -48,7 +48,6 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     if CleanTickets.Config.MaxTicketsOnScreen == nil then
         CleanTickets.Config.MaxTicketsOnScreen = (ScrH() - ScrH() % (CleanTickets.Config.TicketPos.y + 160) ) / (CleanTickets.Config.TicketPos.y + 160)
     end
-    print(math.floor(4.2))
     if CleanTickets.Config.MaxTicketsOnScreen <= #CleanTickets.ClData.OnScreenTickets then return end
 
     local sender = player.GetBySteamID64(ticketdata.sender.steamid)
@@ -103,9 +102,12 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         draw.RoundedBox(100, 0, 0, w, h, CleanTickets.Config.CloseButtonColor)
     end
 
-    local TicketContentContainer = CleanTickets.GUI.Utils.DrawContainer(frame, nil, {["x"] = frame:GetWide()-2, ["y"] = frame:GetTall()-37}, {["x"] = 1, ["y"] = 36}, "", function(s, w, h) end)
-
-    print(TicketContentContainer:GetSize())
+    local TicketContentContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = frame,
+        size = {x=frame:GetWide()-2, y=frame:GetTall()-37},
+        pos = {x=1, y=36},
+        paint = function() end
+    })
 
     local TakeButton = vgui.Create("DButton", TicketContentContainer)
     TakeButton:SetWide(100)
@@ -188,7 +190,13 @@ end
 function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
     local sender = player.GetBySteamID64(ticketdata.sender.steamid)
 
-    local AdminButContainer = CleanTickets.GUI.Utils.DrawContainer(contentcontainer, nil, {["x"] = 100, ["y"] = 0}, {["x"] = 0, ["y"] = 0}, "", function(s, w, h) end, 3, {0,0,0,0})
+    local AdminButContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = contentcontainer,
+        size = {x=100, y=0},
+        pos = {x=0, y=0},
+        paint = function() end,
+        dock = RIGHT,
+    })
 
     local GotoButton = vgui.Create("DButton", AdminButContainer)
     GotoButton:SetTall(23)

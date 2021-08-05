@@ -21,29 +21,46 @@ function CleanTickets.GUI.Utils.DrawLine(start_x, start_y, end_x, end_y, color)
 end
 
 
-function CleanTickets.GUI.Utils.DrawContainer(parent, color, size, pos, title, paint, dock, margin)
-    local title = title or ""
-    local container = vgui.Create("DPanel", parent)
-    if dock then
-        container:Dock(dock)
-        if margin then
-            container:DockMargin(margin[1], margin[2], margin[3], margin[4])
+--[[
+    CONTAINER
+
+    This is a container class for the GUI. It contains the following
+    functions:
+        - settings.parent
+        - settings.color
+        - settings.size
+        - settings.pos
+        - settings.title
+        - settings.paint
+        - settings.dock
+        - settings.margin
+]]
+
+function CleanTickets.GUI.Utils.DrawContainer(settings)
+    local title = settings.title or ""
+    local container = vgui.Create("DPanel", settings.parent)
+    if settings.dock then
+        container:Dock(settings.dock)
+        if settings.margin then
+            container:DockMargin(settings.margin[1], settings.margin[2], settings.margin[3], settings.margin[4])
         end
     end
-    if size then 
-        container:SetSize(size["x"], size["y"])
+    if settings.size then 
+        container:SetSize(settings.size.x, settings.size.y)
     end
-    if pos then
-        container:SetPos(pos["x"], pos["y"])
+    if settings.pos then
+        container:SetPos(settings.pos.x, settings.pos.y)
     end
-    if(paint) then
-        container.Paint = paint
+    if(settings.paint) then
+        container.Paint = settings.paint
     else
         container.Paint = function(s,w, h)
-            draw.RoundedBox(10, 0, 0, w, h, color)
-            local wt, ht = surface.GetTextSize(title)
-            draw.SimpleText(title, "CleanTickets_Font25", w/2, 10,
-                Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.RoundedBox(10, 0, 0, w, h, settings.color)
+            if settings.title then
+                local wt, ht = surface.GetTextSize(settings.title)
+                draw.SimpleText(settings.title, "CleanTickets_Font25", w/2, 10,
+                    Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
         end
     end
     return container
@@ -148,14 +165,19 @@ end
 
 function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, margin, paint, onvaluechange, multiline, maxcharacters)
     local msgfocused = false
-    local textboxcontainer = CleanTickets.GUI.Utils.DrawContainer(parent, nil, {["x"]=size["x"] or 0, ["y"]=size["y"] or 0}, nil, "", function(self, w, h) 
-        if (msgfocused) then
-            draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
-        else
-            draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
+
+    local textboxcontainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = parent,
+        size = size or {x=0,y=0},
+        paint = function(s,w, h)
+            if (msgfocused) then
+                draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
+            else
+                draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
+            end
+            draw.RoundedBox(8, 2, 2, w - 4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
         end
-        draw.RoundedBox(8, 2, 2, w - 4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
-    end)
+    })
 
     if dock then
         textboxcontainer:Dock(dock)
@@ -196,34 +218,59 @@ function CleanTickets.GUI.Utils.DrawTextBox(parent, color, font, size, dock, mar
     return textboxcontainer
 end
 
-function CleanTickets.GUI.Utils.DrawButton(parent, text, font, size, dock, margin, paint, doclick)
-    local button = vgui.Create( "DButton", parent )
-    button:SetFont(font)
-    button:SetColor(CleanTickets.Config.TextColor)
-    button:SetSize(size["x"] or 0, size["y"] or 0)
-    if dock then
-        button:Dock(dock)
-        if margin then
-            button:DockMargin(margin[1], margin[2], margin[3], margin[4])
+--[[
+    BUTTONS
+
+    Settings arrangement :
+        settings.parent
+        settings.text
+        settings.font
+        settings.size
+        settings.pos
+        settings.dock
+        settings.margin
+        settings.items
+        settings.doclick
+        settings.paint
+        settings.SizeToContentsX,
+        settings.SizeToContentsY
+
+]]
+
+function CleanTickets.GUI.Utils.DrawButton(settings)
+    local button = vgui.Create( "DButton", settings.parent )
+    button:SetFont(settings.font)
+    button:SetColor(settings.color or CleanTickets.Config.TextColor)
+    button:SetSize(settings.size.x or 0, settings.size.y or 0)
+    if settings.dock then
+        button:Dock(settings.dock)
+        if settings.margin then
+            button:DockMargin(settings.margin[1], settings.margin[2], settings.margin[3], settings.margin[4])
         end
     end
-    if paint then
-        button.Paint = paint
+    if settings.paint then
+        button.Paint = settings.paint
     else
         button.Paint = function(s,w, h)
             if s:IsHovered() then
                 draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentDarkerColor)
-                -- draw.RoundedBox(8, 2, 2, w-4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
             else
                 draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)
-                -- draw.RoundedBox(8, 2, 2, w-4, h - 4, CleanTickets.Config.TabPanelBackgroundColor)
             end
         end
     end
-    button:SetText(text)
+    button:SetText(settings.text)
     function button:DoClick()
-        doclick()
+        settings.doclick()
     end
+
+    if settings.SizeToContentsX then
+        button:SizeToContentsX(settings.SizeToContentsX)
+    end
+    if settings.SizeToContentsY then
+        button:SizeToContentsY(settings.SizeToContentsY)
+    end
+    
     return button
 end
 
@@ -255,7 +302,14 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
 
     local filterspanelopen = false
     local filter_expanded = 32
-    local filterspanel = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {["x"] = parent:GetWide()-20, ["y"] = 30}, {["x"] = 10, ["y"] = 10}, "")
+    
+    local filterspanel = CleanTickets.GUI.Utils.DrawContainer({
+        parent = parent,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x=parent:GetWide()-20, y=30},
+        pos = {x=10, y=10},
+    })
+
 
     local listpanel = vgui.Create("DPanel", parent)
     listpanel:SetSize(parent:GetWide()-20, parent:GetTall()-filterspanel:GetTall()-20)
@@ -292,7 +346,14 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut)
         if not filterspanelopen then
             filterspanelopen = true
             filterspanel:SetTall(30+filter_expanded)
-            local filterscontainer = CleanTickets.GUI.Utils.DrawContainer(filterspanel, CleanTickets.Config.MainFrameBackground, {["x"] = filterspanel:GetWide(), ["y"] = 30}, {["x"] = 0, ["y"] = 30}, "")
+
+            local filterscontainer = CleanTickets.GUI.Utils.DrawContainer({
+                parent = filterspanel,
+                color = CleanTickets.Config.MainFrameBackground,
+                size = {x=filterspanel:GetWide(), y=30},
+                pos = {x=0, y=0},
+            })
+
             local filters = CleanTickets.GUI.Utils.DisplayFilters(filterscontainer, ticketslist, function(data) 
                 filters_data = data
                 CleanTickets.GUI.TLP_RefreshTickets()
@@ -426,7 +487,13 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
     filters_list:SetOverlap(-10)
     
     local function filter_element(parent, name, ypos, choices, onselect, sortitems)
-        local element_container = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {["x"] = parent:GetWide(), ["y"] = 26}, {["x"] = 0, ["y"] = ypos})
+        local element_container = CleanTickets.GUI.Utils.DrawContainer({
+            parent = parent,
+            color = CleanTickets.Config.MainFrameBackground,
+            size = {x=parent:GetWide(), y=26},
+            pos = {x=0, y=ypos},
+        })
+
         local element_label = CleanTickets.GUI.Utils.DrawLabel(element_container, name, "CleanTickets_Font24", false, {["x"]=0, ["y"] = 0}, LEFT, {5,0,0,0})
         local element_dropdown = vgui.Create("DComboBox", element_container)
         element_dropdown:SetSize(100, 25)
@@ -458,11 +525,11 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
     end
 
     local status_element = filter_element(filters_list, CleanTickets.Lang.FILTER_STATUS, 0, function(element_dropdown) 
-        element_dropdown:AddChoice("Open")
-        element_dropdown:AddChoice("Taken")
-        element_dropdown:AddChoice("Closed")
+        element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_OPEN, "Open")
+        element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_TAKEN, "Taken")
+        element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_CLOSED, "Closed")
     end, function(index, text, data) 
-        filters_data.status = text
+        filters_data.status = data
         if callback then
             callback(filters_data)
         end

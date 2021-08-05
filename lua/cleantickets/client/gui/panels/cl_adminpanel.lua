@@ -108,7 +108,13 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
 end
 
 function CleanTickets.GUI.AdminPanel.Statistics(parent)
-    local ServerStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = 10}, CleanTickets.Lang.PANEL_ADMIN_SERVERSTATS, nil)
+    local ServerStats = CleanTickets.GUI.Utils.DrawContainer({
+        parent = parent,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x = parent:GetWide()-20, y = parent:GetTall()/2 - 12.5},
+        pos = {x = 10, y = 10},
+        title = CleanTickets.Lang.PANEL_ADMIN_SERVERSTATS,
+    })
 
     local ServerStats_list = vgui.Create("DHorizontalScroller", ServerStats)
     ServerStats_list:SetPos( 12, 30 )
@@ -172,7 +178,6 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
     }
 
     for k, v in ipairs(ServerStats_elements) do
-        -- local stats_item = CleanTickets.GUI.Utils.DrawContainer(ServerStats_list, CleanTickets.Config.AccentColor, {x = ServerStats_list:GetTall()-10, y = ServerStats_list:GetTall()-10}, {x = 10, y = 20}, v.name, nil)
         
         local stat_item = vgui.Create("DPanel", ServerStats_list)
         stat_item:SetSize( ServerStats_list:GetWide()/4-9, ServerStats_list:GetTall())
@@ -199,7 +204,13 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
         ServerStats_list:AddPanel(stat_item)
     end
 
-    local AdminStats = CleanTickets.GUI.Utils.DrawContainer(parent, CleanTickets.Config.MainFrameBackground, {x=parent:GetWide()-20, y = parent:GetTall()/2 - 12.5}, {x = 10, y = ServerStats:GetTall()+20}, CleanTickets.Lang.PANEL_ADMIN_PLYSTATS, nil)
+    local AdminStats = CleanTickets.GUI.Utils.DrawContainer({
+        parent = parent,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x = parent:GetWide()-20, y = parent:GetTall()/2 - 12.5},
+        pos = {x = 10, y = ServerStats:GetTall()+20},
+        title = CleanTickets.Lang.PANEL_ADMIN_PLYSTATS,
+    })
 end
 
 

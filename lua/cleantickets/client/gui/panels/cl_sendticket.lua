@@ -12,13 +12,25 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         surface.SetFont("CleanTickets_Font25")
     end
 
-    local TopContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.TabPanelBackgroundColor, {["x"]=600, ["y"]=160}, nil, "", nil, 4, {0,0,0,0})
+    local TopContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = panel,
+        color = CleanTickets.Config.TabPanelBackgroundColor,
+        size = {x=600, y=160},
+        dock = TOP       
+    })
 
-    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=550, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_DESCRIPTION, nil, 1, {10,10,0,0})
+    local DescriptionContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = TopContainer,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x=550, y=190},
+        dock = FILL,
+        margin = {10,10,0,0},
+        title = CleanTickets.Lang.PANEL_SENDTICKET_DESCRIPTION
+    })
 
-    local subject_table = {{CleanTickets.Lang.PANEL_SENDTICKET_SUBJECT, nil}}
+    local subject_table = {{CleanTickets.Lang.PANEL_SENDTICKET_SUBJECT}}
     for i = 1, #CleanTickets.Config.SubjectsList do
-        table.insert(subject_table, {CleanTickets.Config.SubjectsList[i], nil})
+        table.insert(subject_table, {CleanTickets.Config.SubjectsList[i]})
     end
 
     local subjectdropdown = CleanTickets.GUI.Utils.DrawComboBox({
@@ -26,7 +38,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         textcolor = CleanTickets.Config.TextColor,
         font = "CleanTickets_Font25",
         items = subject_table,
-        size = {y=25},
+        size = {x=0,y=25},
         dock = 4,
         margin = {10,25,10,0},
         sortitems = false,
@@ -44,9 +56,14 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         Message = text
     end, true, CleanTickets.Config.MaxDescCharacters)
 
-
-    
-    local PlayerListContainer = CleanTickets.GUI.Utils.DrawContainer(TopContainer, CleanTickets.Config.MainFrameBackground, {["x"]=200, ["y"]=190}, nil, CleanTickets.Lang.PANEL_SENDTICKET_SELECTPLAYERS, nil, 3, {10,10,10,0})
+    local PlayerListContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = TopContainer,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x=200, y=190},
+        title = CleanTickets.Lang.PANEL_SENDTICKET_SELECTPLAYERS,
+        dock = RIGHT,
+        margin = {10,10,10,0}
+    })
 
     
 
@@ -130,31 +147,51 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         end
     end
 
-    local AttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(panel, CleanTickets.Config.MainFrameBackground, {["x"]=600, ["y"]=160}, nil, CleanTickets.Lang.PANEL_SENDTICKET_ATTACHMENTS, nil, 4, {10,10,10,0})
+    local AttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = panel,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x=600, y=160},
+        title = CleanTickets.Lang.PANEL_SENDTICKET_ATTACHMENTS,
+        dock = TOP,
+        margin = {10,10,10,0}
+    })
 
-    local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer(AttachmentsContainer, CleanTickets.Config.MainFrameBackground, {["x"]=0, ["y"]=28}, nil, "", nil, 4, {10,25,10,0})
+    local TopAttachmentsContainer = CleanTickets.GUI.Utils.DrawContainer({
+        parent = AttachmentsContainer,
+        color = CleanTickets.Config.MainFrameBackground,
+        size = {x=0, y=28},
+        dock = TOP,
+        margin = {10,25,10,0}
+    })
 
     local link = ""
     local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 630, ["y"] = 25}, 1, {0,0,0,0}, nil, function(text)
         link = text
     end)
 
-    local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton(TopAttachmentsContainer, CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK, "CleanTickets_Font25", {["x"] = 100, ["y"] = 25}, 3, {10,0,0,0}, nil, function()
-        if string.len(link) == 0 then return end
-        if #attachments >= CleanTickets.Config.MaxAttachments then
-            CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
-            return
-        end
-        for k, v in pairs(attachments) do
-            -- if(v[2] == data) then
-            if (v == link) then
+    local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton({
+        parent = TopAttachmentsContainer,
+        font = "CleanTickets_Font25",
+        text = CleanTickets.Lang.PANEL_SENDTICKET_BTNADDLINK,
+        size = {x=0,y=25}, 
+        dock = RIGHT,
+        margin = {10,0,0,0},
+        doclick = function()
+            if string.len(link) == 0 then return end
+            if #attachments >= CleanTickets.Config.MaxAttachments then
+                CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.PANEL_ATTACHMENTLIMIT, 0, 3, nil)
                 return
             end
-        end
-        table.insert(attachments, link)
-        fetchAttachmentslist()
-    end)
-    AddAttachmentButton:SizeToContentsX(10)
+            for k, v in pairs(attachments) do
+                if (v == link) then
+                    return
+                end
+            end
+            table.insert(attachments, link)
+            fetchAttachmentslist()
+        end,
+        SizeToContentsX = 10
+    })
 
     local AttachmentsList = vgui.Create("DScrollPanel", AttachmentsContainer)
     AttachmentsList:Dock(1)
