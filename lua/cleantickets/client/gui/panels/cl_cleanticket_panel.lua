@@ -47,41 +47,34 @@ function CleanTickets.GUI.Panel.Main()
 
     end
 
-    local CloseButton = vgui.Create("DButton", frame)
-    CloseButton:SetPos(frame:GetWide() - 30, 10)
-    CloseButton:SetSize(20, 20)
-    CloseButton:SetText("")
-    CloseButton:SetTooltip("Close")
-    CloseButton.DoClick = function()
-        local anim = Derma_Anim("EaseInQuad", frame, function(pnl, anim, delta, data)
-            pnl:SetPos(xf, inQuad(delta, yf, -20))
-            -- pnl:SetSize(inQuad(delta, 0, w), inQuad(delta, 0, h))
-            pnl:SetAlpha(inQuad(delta, 255, -255))
-        end)
-        -- Animate for 0.5 second
-        anim:Start(0.5)
-        frame.Think = function(self)
-            if anim:Active() then
-                anim:Run()
+    local CloseButton = CleanTickets.GUI.Utils.DrawCloseButton({
+        parent = frame,
+        pos = {x=frame:GetWide()-30, y=10},
+        doclick = function()
+            local anim = Derma_Anim("EaseInQuad", frame, function(pnl, anim, delta, data)
+                pnl:SetPos(xf, inQuad(delta, yf, -20))
+                -- pnl:SetSize(inQuad(delta, 0, w), inQuad(delta, 0, h))
+                pnl:SetAlpha(inQuad(delta, 255, -255))
+            end)
+            -- Animate for 0.5 second
+            anim:Start(0.5)
+            frame.Think = function(self)
+                if anim:Active() then
+                    anim:Run()
+                end
             end
+            timer.Simple(0.6, function()
+                frame:Close()
+            end)
         end
-        timer.Simple(0.6, function()
-            frame:Close()
-        end)
+    })
 
-    end
-    CloseButton.Paint = function(s, w, h)
-        draw.RoundedBox(100, 0, 0, w, h, CleanTickets.Config.CloseButtonColor)
-
-    end
-
-    local tabs = vgui.Create('DPanelList', frame)
+    local tabs = vgui.Create('DIconLayout', frame)
     tabs:SetPos(40, 60)
     local tx, ty = tabs:GetPos()
     tabs:SetSize(frame:GetWide(), 45)
-    tabs:EnableHorizontal(true)
-    tabs:SetStretchHorizontally(true)
-    tabs:SetSpacing(10)
+    tabs:SetSpaceX(10)
+    tabs:SetSpaceY(0)
 
     local active_panel = vgui.Create('DPanel', frame)
     active_panel:SetPos(10, ty + tabs:GetTall() - 5)
@@ -114,7 +107,7 @@ function CleanTickets.GUI.Panel.Main()
             btn_selection = v
             DisplayTabPnl(v, active_panel)
         end
-        tabs:AddItem(btn)
+        tabs:Add(btn)
         if (k == 1) then
             DisplayTabPnl(v, active_panel)
             btn_selection = v

@@ -275,8 +275,8 @@ end
 ]]
 
 function CleanTickets.GUI.Utils.DrawButton(settings)
-    local button = vgui.Create( "DButton", settings.parent )
-    button:SetFont(settings.font)
+    local button = vgui.Create( "DButton", settings.parent )    
+    button:SetFont(settings.font or "CleanTickets_Font22")
     button:SetColor(settings.color or CleanTickets.Config.TextColor)
     button:SetSize(settings.size.x or 0, settings.size.y or 0)
     if settings.dock then
@@ -296,7 +296,7 @@ function CleanTickets.GUI.Utils.DrawButton(settings)
             end
         end
     end
-    button:SetText(settings.text)
+    button:SetText(settings.text or "")
     function button:DoClick()
         settings.doclick()
     end
@@ -308,7 +308,26 @@ function CleanTickets.GUI.Utils.DrawButton(settings)
         button:SizeToContentsY(settings.SizeToContentsY)
     end
 
+    if settings.tooltip then
+        button:SetTooltip(settings.tooltip)
+    end
+
     return button
+end
+
+function CleanTickets.GUI.Utils.DrawCloseButton(settings)
+    local btn_close = CleanTickets.GUI.Utils.DrawButton({
+        parent = settings.parent,
+        tooltip = CleanTickets.Lang.PANEL_CLOSE,
+        size = {x=20,y=20},
+        pos = settings.pos,
+        doclick = settings.doclick,
+        paint = function(s, w, h)
+            draw.RoundedBox(100, 0, 0, w, h, CleanTickets.Config.CloseButtonColor)
+        end
+        
+    })
+    return btn_close
 end
 
 function CleanTickets.GUI.Utils.GetTicketStatus(status)
