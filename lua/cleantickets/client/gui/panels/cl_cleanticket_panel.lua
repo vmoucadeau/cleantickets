@@ -1,5 +1,10 @@
 CleanTickets.GUI.Panel = {}
 
+function CleanTickets.GUI.Panel.DisplayTab(tab, pnl)
+    pnl:Clear()
+    tab.panel(pnl)
+end
+
 function CleanTickets.GUI.Panel.Main()
     local tabstable = {
         [1] = {
@@ -70,16 +75,16 @@ function CleanTickets.GUI.Panel.Main()
     })
 
     local tabs = vgui.Create('DIconLayout', frame)
-    tabs:SetPos(40, 60)
-    local tx, ty = tabs:GetPos()
-    tabs:SetSize(frame:GetWide(), 45)
+    tabs:Dock(TOP)
+    tabs:DockMargin(30,25,10,0)
+    tabs:SetSize(0, 40)
     tabs:SetSpaceX(10)
     tabs:SetSpaceY(0)
 
     local active_panel = vgui.Create('DPanel', frame)
-    active_panel:SetPos(10, ty + tabs:GetTall() - 5)
-    local xp, yp = active_panel:GetPos()
-    active_panel:SetSize(frame:GetWide() - 20, frame:GetTall() - yp - 10)
+    active_panel:SetSize(frame:GetWide()-20,390)
+    active_panel:SetPos(10, 94)
+    -- active_panel:DockMargin(10,0,10,10)
     active_panel.Paint = function(self, w, h)
         draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
     end
@@ -88,16 +93,14 @@ function CleanTickets.GUI.Panel.Main()
 
     for k, v in ipairs(tabstable) do
 
-        local btn = vgui.Create("DButton", frame)
-        surface.SetFont("CleanTickets_Font25")
-        local w, h = surface.GetTextSize(v.name)
-        btn:SetSize(w + 20, 40)
+        local btn = vgui.Create("DButton", tabs)
+        btn:SetSize(0, 40)
         btn:SetFont("CleanTickets_Font25")
         btn:SetTextColor(Color(255, 255, 255))
         btn:SetText(v.name)
-        btn:SetPos(ScrW() * 0.4, 10)
+        btn:SizeToContentsX(20)
         btn.Paint = function(me, w, h)
-            draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
+            draw.RoundedBoxEx(16, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
             if me:IsHovered() or (btn_selection == v) then -- Or selected
                 local empty = 30
                 draw.RoundedBox(0, empty / 2, h - 3, w - empty, 3, Color(255, 255, 255, 200))
@@ -105,42 +108,38 @@ function CleanTickets.GUI.Panel.Main()
         end
         btn.DoClick = function()
             btn_selection = v
-            DisplayTabPnl(v, active_panel)
+            CleanTickets.GUI.Panel.DisplayTab(v, active_panel)
         end
         tabs:Add(btn)
-        if (k == 1) then
-            DisplayTabPnl(v, active_panel)
-            btn_selection = v
-        end
     end
+
+    CleanTickets.GUI.Panel.DisplayTab(tabstable[1], active_panel)
+    btn_selection = tabstable[1]
 
     if CleanTickets.ClFuncs.IsAdmin() then
-        local admin_btn = vgui.Create("DButton", frame)
-        surface.SetFont("CleanTickets_Font25")
-        local w, h = surface.GetTextSize(CleanTickets.Lang.PANEL_TAB_ADMIN)
-        admin_btn:SetSize(w + 20, 40)
-        admin_btn:SetFont("CleanTickets_Font25")
-        admin_btn:SetTextColor(Color(255, 255, 255))
-        admin_btn:SetText(CleanTickets.Lang.PANEL_TAB_ADMIN)
-        admin_btn:SetPos(active_panel:GetWide() - w - 40, 60)
-        admin_btn.Paint = function(me, w, h)
-            draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
-            if me:IsHovered() or (btn_selection == CleanTickets.Lang.PANEL_TAB_ADMIN) then -- Or selected
-                local empty = 30
-                draw.RoundedBox(0, empty / 2, h - 3, w - empty, 3, CleanTickets.Config.AccentColor)
+
+        local admin_btn = CleanTickets.GUI.Utils.DrawButton({
+            parent = tabs,
+            font = "CleanTickets_Font25",
+            text = CleanTickets.Lang.PANEL_TAB_ADMIN,
+            size = {x=0, y=40},
+            dock = RIGHT,
+            margin = {0, 0, 30, 0},
+            SizeToContentsX = 20,
+            paint = function(s, w, h)
+                draw.RoundedBoxEx(16, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
+                if s:IsHovered() or (btn_selection == CleanTickets.Lang.PANEL_TAB_ADMIN) then -- Or selected
+                    local empty = 30
+                    draw.RoundedBox(0, empty / 2, h - 3, w - empty, 3, CleanTickets.Config.AccentColor)
+                end
+            end,
+            doclick = function()
+                btn_selection = CleanTickets.Lang.PANEL_TAB_ADMIN
+                active_panel:Clear()
+                CleanTickets.GUI.AdminPanel.Main(active_panel)
             end
-        end
-        admin_btn.DoClick = function()
-            btn_selection = CleanTickets.Lang.PANEL_TAB_ADMIN
-            active_panel:Clear()
-            CleanTickets.GUI.AdminPanel.Main(active_panel)
-        end
+
+        })
 
     end
 end
-
-function DisplayTabPnl(item, pnl)
-    pnl:Clear()
-    return item.panel(pnl)
-end
-

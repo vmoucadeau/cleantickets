@@ -9,7 +9,6 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     panel:SetPos(0, 0)
 
     panel.Paint = function(self, w, h)
-        surface.SetFont("CleanTickets_Font25")
     end
 
     local TopContainer = CleanTickets.GUI.Utils.DrawContainer({

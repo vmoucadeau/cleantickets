@@ -61,12 +61,12 @@ function CleanTickets.GUI.AdminPanel.Main(active_panel)
         
         btn.DoClick = function()
             admin_selection = v
-            DisplayTabPnl(v, ActiveAdminPanel)
+            CleanTickets.GUI.Panel.DisplayTab(v, ActiveAdminPanel)
         end
         admintabs:AddItem(btn)
         if (k == 1) then
             admin_selection = v
-            DisplayTabPnl(v, ActiveAdminPanel)
+            CleanTickets.GUI.Panel.DisplayTab(v, ActiveAdminPanel)
         end
     end
     admintabs:SetSize(tabsbarsize, 40)
@@ -150,11 +150,11 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
     local ServerStats_elements = {
         [1] = {
             name = CleanTickets.Lang.PANEL_ADMIN_CONNECTEDPLAYERS,
-            data = {"number", player.GetCount()} 
+            data = function() return player.GetCount() end
         },
         [2] = {
             name = CleanTickets.Lang.PANEL_ADMIN_CONNECTEDADMINS,
-            data = {"function", function() 
+            data = function() 
                 local admins = 0
                 for k, v in pairs(player.GetHumans()) do
                     if(CleanTickets.ClFuncs.IsAdmin(v)) then
@@ -162,15 +162,15 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
                     end
                 end
                 return admins
-            end} 
+            end
         },
         [3] = {
             name = CleanTickets.Lang.PANEL_ADMIN_OPENTICKETS,
-            data = {"number", open_tickets} 
+            data = function() return open_tickets end
         },
         [4] = {
             name = CleanTickets.Lang.PANEL_ADMIN_TAKENTICKETS,
-            data = {"number", taken_tickets} 
+            data = function() return taken_tickets end
         }
 
     }
@@ -196,20 +196,12 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
 
         local stat_data = CleanTickets.GUI.Utils.DrawLabel({
             parent = stat_item,
-            text = "",
+            text = v.data(),
             font = "CleanTickets_Font60",
             dock = FILL,
             margin = {5, 0, 0, 0},
             align = 5,
         })
-
-        if v.data[1] == "number" then
-            stat_data:SetText(v.data[2])
-        end
-        if v.data[1] == "function" then
-            local function_data = v.data[2]()
-            stat_data:SetText(function_data)
-        end
 
         ServerStats_list:AddPanel(stat_item)
     end

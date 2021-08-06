@@ -285,6 +285,9 @@ function CleanTickets.GUI.Utils.DrawButton(settings)
             button:DockMargin(settings.margin[1], settings.margin[2], settings.margin[3], settings.margin[4])
         end
     end
+    if settings.pos then
+        button:SetPos(settings.pos.x or 0, settings.pos.y or 0)
+    end
     if settings.paint then
         button.Paint = settings.paint
     else

@@ -56,7 +56,7 @@ local Language_EN = {
     TICKET_ATTACHMENTS = "Attachments: ",
     TICKET_TAKENBY = "Taken by: ",
     TICKET_DATE = "Date: ",
-    TICKET_TIME = "Hour: ",
+    TICKET_TIME = "Time: ",
 
     -- TICKETS BUTTONS --
     TICKET_BUT_TAKE = "Take Ticket",
@@ -188,5 +188,5 @@ local Language_FR = {
     BTN_CLOSE = "Fermer",
 }
 
-CleanTickets.Lang = Language_EN
+CleanTickets.Lang = Language_FR
 
