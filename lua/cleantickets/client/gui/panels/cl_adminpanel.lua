@@ -41,8 +41,8 @@ function CleanTickets.GUI.AdminPanel.Main(active_panel)
         local btn = vgui.Create("DButton", AdminPanel)
         surface.SetFont("CleanTickets_Font22")
         local w, h = surface.GetTextSize(v.name)
-        tabsbarsize = tabsbarsize + w + 25
-        btn:SetSize(w + 25, 30)
+        tabsbarsize = tabsbarsize + w + 28
+        btn:SetSize(w + 28, 30)
         btn:SetFont("CleanTickets_Font22")
         btn:SetTextColor(Color(255, 255, 255))
         btn:SetText(v.name)
@@ -51,9 +51,9 @@ function CleanTickets.GUI.AdminPanel.Main(active_panel)
             local color
             if me:IsHovered() or (admin_selection == v) then color = CleanTickets.Config.AccentColor else color = CleanTickets.Config.MainFrameBackground end -- Or selected
             if (k==1) then
-                draw.RoundedBoxEx(14.5, 0, 0, w, h, color, true, false, true, false)
+                draw.RoundedBoxEx(16, 0, 0, w, h, color, true, false, true, false)
             elseif (k==#admintabstable) then
-                draw.RoundedBoxEx(14.5, 0, 0, w, h, color, false, true, false, true)
+                draw.RoundedBoxEx(16, 0, 0, w, h, color, false, true, false, true)
             else
                 draw.RoundedBoxEx(0, 0, 0, w, h, color, false, true, false, true)
             end
@@ -103,7 +103,7 @@ function CleanTickets.GUI.AdminPanel.AllTickets(parent)
         end
     end
 
-    return CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.ServerTickets, parent, TicketsButtons)
+    return CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.ServerTickets, parent, TicketsButtons, CleanTickets.Lang.SERVER_NO_TICKET)
 
 end
 
@@ -155,13 +155,11 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
         [2] = {
             name = CleanTickets.Lang.PANEL_ADMIN_CONNECTEDADMINS,
             data = {"function", function() 
-                local admins = 10
+                local admins = 0
                 for k, v in pairs(player.GetHumans()) do
-                    table.foreachi(CleanTickets.Config.AdminGroups, function(group) 
-                        if (v:IsUserGroup(group)) then
-                            admins = admins + 1
-                        end
-                    end)
+                    if(CleanTickets.ClFuncs.IsAdmin(v)) then
+                        admins = admins + 1
+                    end
                 end
                 return admins
             end} 
@@ -187,18 +185,30 @@ function CleanTickets.GUI.AdminPanel.Statistics(parent)
             draw.RoundedBoxEx(15, 0, 25, w, h-25, CleanTickets.Config.TabPanelBackgroundColor, false, false, true, true)
         end
 
-        local stat_label = CleanTickets.GUI.Utils.DrawLabel(stat_item, v.name, "CleanTickets_Font24", nil, {["x"]=0, ["y"] = 0}, nil, nil)
-        stat_label:SetPos(stat_item:GetWide()/2-stat_label:GetWide()/2,0)
+        local stat_label = CleanTickets.GUI.Utils.DrawLabel({
+            parent = stat_item,
+            text = v.name,
+            font = "CleanTickets_Font24",
+            dock = TOP,
+            margin = {5, 0, 0, 0},
+            align = 5,
+        })
+
+        local stat_data = CleanTickets.GUI.Utils.DrawLabel({
+            parent = stat_item,
+            text = "",
+            font = "CleanTickets_Font60",
+            dock = FILL,
+            margin = {5, 0, 0, 0},
+            align = 5,
+        })
 
         if v.data[1] == "number" then
-            local stat_data = CleanTickets.GUI.Utils.DrawLabel(stat_item, v.data[2], "CleanTickets_Font60", nil, {["x"]=0, ["y"] = 0}, nil, nil)
-            stat_data:SetPos(stat_item:GetWide()/2-stat_data:GetWide()/2,(stat_item:GetTall()+25)/2-stat_data:GetTall()/2)
+            stat_data:SetText(v.data[2])
         end
         if v.data[1] == "function" then
             local function_data = v.data[2]()
-
-            local stat_data = CleanTickets.GUI.Utils.DrawLabel(stat_item, function_data, "CleanTickets_Font60", nil, {["x"]=0, ["y"] = 0}, nil, nil)
-            stat_data:SetPos(stat_item:GetWide()/2-stat_data:GetWide()/2,(stat_item:GetTall()+25)/2-stat_data:GetTall()/2)
+            stat_data:SetText(function_data)
         end
 
         ServerStats_list:AddPanel(stat_item)

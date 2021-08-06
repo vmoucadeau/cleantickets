@@ -23,5 +23,5 @@ function CleanTickets.GUI.Panel.MyTickets(parent)
         end
     end
 
-    return CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.PlyTickets, parent, TicketsButtons)
+    return CleanTickets.GUI.Utils.TicketsListPanel(CleanTickets.ClData.PlyTickets, parent, TicketsButtons, CleanTickets.Lang.PLY_NO_TICKET)
 end

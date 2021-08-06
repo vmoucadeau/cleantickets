@@ -52,17 +52,27 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
         
     })
 
-    local description_entry = CleanTickets.GUI.Utils.DrawTextBox(DescriptionContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 500, ["y"] = 90}, 1, {10,10,10,10}, nil, function(text)
-        Message = text
-    end, true, CleanTickets.Config.MaxDescCharacters)
-
     local PlayerListContainer = CleanTickets.GUI.Utils.DrawContainer({
         parent = TopContainer,
+        font = "CleanTickets_Font25",
         color = CleanTickets.Config.MainFrameBackground,
         size = {x=200, y=190},
         title = CleanTickets.Lang.PANEL_SENDTICKET_SELECTPLAYERS,
         dock = RIGHT,
         margin = {10,10,10,0}
+    })
+
+    local description_entry = CleanTickets.GUI.Utils.DrawTextBox({
+        parent = DescriptionContainer,
+        font = "CleanTickets_Font25",
+        size = {x=0, y=0},
+        dock = FILL,
+        margin = {10,10,10,10},
+        multiline = true,
+        maxcharacters = CleanTickets.Config.MaxDescCharacters,
+        onvaluechange = function(value)
+            Message = value
+        end
     })
 
     
@@ -165,9 +175,17 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
     })
 
     local link = ""
-    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox(TopAttachmentsContainer, CleanTickets.Config.TextColor, "CleanTickets_Font25", {["x"] = 630, ["y"] = 25}, 1, {0,0,0,0}, nil, function(text)
-        link = text
-    end)
+
+    local LinkEntry = CleanTickets.GUI.Utils.DrawTextBox({
+        parent = TopAttachmentsContainer,
+        font = "CleanTickets_Font22",
+        size = {x=0, y=0},
+        dock = FILL,
+        onvaluechange = function(value)
+            link = value
+        end
+
+    })
 
     local AddAttachmentButton = CleanTickets.GUI.Utils.DrawButton({
         parent = TopAttachmentsContainer,

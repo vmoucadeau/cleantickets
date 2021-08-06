@@ -81,6 +81,8 @@ local Language_EN = {
     NOTIF_TICKETCLOSED = "Ticket closed.",
     NOTIF_TICKETCLOSEDBY = "Your ticket has been closed by %s.",
     NOTIF_WARNING = "Warning",
+    PLY_NO_TICKET = "You don't have any tickets yet.",
+    SERVER_NO_TICKET = "There are no tickets on this server yet.",
     
     -- [POPUP TICKET CLAIMED]
     POPUP_TICKET_CLAIMED = "Someone has already taken this ticket :/",
@@ -173,6 +175,8 @@ local Language_FR = {
     NOTIF_TICKETCLOSED = "Ticket fermé.",
     NOTIF_TICKETCLOSEDBY = "Votre ticket a été fermé par %s.",
     NOTIF_WARNING = "Attention",
+    PLY_NO_TICKET = "Vous n'avez pas encore de ticket.",
+    SERVER_NO_TICKET = "Il n'y a pas encore de ticket sur ce serveur.",
     
     -- [POPUP TICKET CLAIMED]
     POPUP_TICKET_CLAIMED = "Quelqu'un a déjà pris ce ticket :/",
