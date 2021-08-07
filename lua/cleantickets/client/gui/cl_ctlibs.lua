@@ -55,7 +55,9 @@ function CleanTickets.GUI.Utils.DrawContainer(settings)
         container.Paint = settings.paint
     else
         container.Paint = function(s,w, h)
-            draw.RoundedBox(10, 0, 0, w, h, settings.color)
+            if settings.color then
+                draw.RoundedBox(10, 0, 0, w, h, settings.color)
+            end
             if settings.title then
                 local wt, ht = surface.GetTextSize(settings.title)
                 draw.SimpleText(settings.title, "CleanTickets_Font25", w/2, 10,
@@ -92,14 +94,12 @@ function CleanTickets.GUI.Utils.DrawLabel(settings)
 		end
 	end
 	label:SetColor(Color(255, 255, 255, 255))
-	label:SetFont(settings.font)
+	label:SetFont(settings.font or "CleanTickets_Font22")
 	label:SetText(settings.text)
 	if settings.size then
 		label:SetSize(settings.size.x, settings.size.y)
     else
-        surface.SetFont(settings.font)
-        local w, h = surface.GetTextSize(settings.text)
-        label:SetSize(w, h)
+        label:SizeToContents(20)
     end
     if settings.pos then
 	    label:SetPos(settings.pos.x or 0, settings.pos.y or 0)
@@ -107,15 +107,18 @@ function CleanTickets.GUI.Utils.DrawLabel(settings)
 	
 	if settings.sizetocontent then
 		if not settings.size.x then
-			label:SizeToContentsX(10)
+			label:SizeToContentsX(20)
 		end
 		if not settings.size.y then
-			label:SizeToContentsY(10)
+			label:SizeToContentsY(20)
 		end
 	end
 	if settings.align then
 		label:SetContentAlignment(settings.align)
 	end
+    if settings.paint then
+        label.Paint = settings.paint
+    end
 
 	return label
 end
@@ -278,7 +281,9 @@ function CleanTickets.GUI.Utils.DrawButton(settings)
     local button = vgui.Create( "DButton", settings.parent )    
     button:SetFont(settings.font or "CleanTickets_Font22")
     button:SetColor(settings.color or CleanTickets.Config.TextColor)
-    button:SetSize(settings.size.x or 0, settings.size.y or 0)
+    if settings.size then    
+        button:SetSize(settings.size.x or 0, settings.size.y or 0)
+    end
     if settings.dock then
         button:Dock(settings.dock)
         if settings.margin then
@@ -481,38 +486,59 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
             end
 
             local ticket_item = vgui.Create("DPanel", item_list)
-            ticket_item:SetSize( listpanel:GetWide()/2 - 30, 150)
+            ticket_item:SetSize( listpanel:GetWide()/2 - 20, 150)
             ticket_item.Paint = function(s, w, h)
-                draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.MainFrameBackground)
+                draw.RoundedBox(16, 0, 0, w, h, CleanTickets.Config.TicketOutline)
+                draw.RoundedBox(16, 1, 1, w-2, h-2, CleanTickets.Config.TicketBackground)
                 draw.SimpleText(v.subject, "CleanTickets_Font25", 10, 3, Color(255,255,255,255))
-                CleanTickets.GUI.Utils.DrawLine(0, 30, w, 30, Color(255,255,255))
+                CleanTickets.GUI.Utils.DrawLine(0, 30, w, 30, CleanTickets.Config.TicketOutline)
             end
+
+            local content_container = CleanTickets.GUI.Utils.DrawContainer({
+                parent = ticket_item,
+                dock = FILL,
+                margin = {1,30,1,1}
+            })
 
             local status_data = CleanTickets.GUI.Utils.GetTicketStatus(v.status)
 
-            local status_label = vgui.Create("DButton", ticket_item)
-            surface.SetFont("CleanTickets_Font18")
-            status_label:SetSize(60, 18)
-            status_label:SetPos(ticket_item:GetWide() - status_label:GetWide() - 10, 7.6)
-            status_label:SetFont("CleanTickets_Font18")
-            status_label:SetText(status_data[1])
-            status_label:SetColor(Color(255,255,255))
-            status_label.Paint = function(s, w, h)
-                draw.RoundedBox(8, 0, 0, w, h, status_data[2])
-            end
+            local status_label = CleanTickets.GUI.Utils.DrawLabel({
+                parent = ticket_item,
+                text = status_data[1],
+                font = "CleanTickets_Font18",
+                color = CleanTickets.Config.TextColor,
+                size = {x=nil,y=18},
+                sizetocontent = true,
+                align = 5,
+                paint = function(s, w, h)
+                    draw.RoundedBox(8, 0, 0, w, h, status_data[2])
+                end
+            })
+            status_label:SetPos(ticket_item:GetWide()-status_label:GetWide()-10, 6)
 
-            ticketbut(v, ticket_item)
+            local but_container = CleanTickets.GUI.Utils.DrawContainer({
+                parent = content_container,
+                size = {x=100,y=0},
+                dock = RIGHT
+            })
+
+            ticketbut({
+                data = v,
+                label = status_label,
+                but_container = but_container,
+                item = ticket_item
+            })
             
 
-            local ticketcontent = vgui.Create( "RichText", ticket_item )
-            ticketcontent:SetPos(0,31)
+            local ticketcontent = vgui.Create( "RichText", content_container )
+            ticketcontent:Dock(FILL)
+
             local wc, hc = ticketcontent:GetPos()
             ticketcontent:SetSize(ticket_item:GetWide() - 100, ticket_item:GetTall()-hc)
             
             function ticketcontent:PerformLayout()
                 self:SetFontInternal("CleanTickets_Font22")
                 self:SetFGColor(255, 255, 255, 255) 
-                self:SetBGColor(255,255,255,0)
             end
             ticketcontent:AppendText(CleanTickets.Lang.TICKET_CREATOR .. v.sender.name .. "\n")
             ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. v.message .. "\n")
@@ -530,7 +556,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
             end
             
             ticketcontent.Paint = function(self, w, h)
-                draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,0,0,150), false, false, true, false)
+                draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,0,0,0), false, false, true, false)
             end
 
             item_list:Add(ticket_item)
