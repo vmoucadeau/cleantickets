@@ -344,12 +344,9 @@ function CleanTickets.GUI.Utils.GetTicketStatus(status)
     if status == "Open" then
         status_color = CleanTickets.Config.OpenColor
         status_text = CleanTickets.Lang.TICKETSTATUS_OPEN
-    elseif status == "Taken" then
+    else 
         status_color = CleanTickets.Config.TakenColor
         status_text = CleanTickets.Lang.TICKETSTATUS_TAKEN
-    else 
-        status_color = CleanTickets.Config.ClosedColor
-        status_text = CleanTickets.Lang.TICKETSTATUS_CLOSED
     end
 
     return {status_text, status_color}
@@ -405,15 +402,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
 	item_list:SetSpaceY(10)
     item_list:SetSpaceX(10)
 
-    local filters_data = {
-        status = "",
-        player = nil,
-        subject = "",
-        date = ""
-    }
-
-
-
+    local filters_data = {}
     local filtersbutton = vgui.Create("DButton", filterspanel)
     filtersbutton:SetSize(filterspanel:GetWide(), 30)
     filtersbutton:Dock(TOP)
@@ -461,26 +450,26 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
     function CleanTickets.GUI.TLP_RefreshTickets()
         item_list:Clear()
 
-        table.foreachi(ticketslist, function(v) 
+        for _, ticket in ipairs(ticketslist) do
             -- FILTERS CHECK
-            local v = ticketslist[v]
+            
             if (filters_data.status ~= "") then
-                if(v.status ~= filters_data.status) then
+                if(ticket.status ~= filters_data.status) then
                     return
                 end
             end 
             if (filters_data.player ~= nil) then
-                if(v.sender.steamid ~= filters_data.player) then
+                if(ticket.sender.steamid ~= filters_data.player) then
                     return
                 end
             end 
             if (filters_data.subject ~= "") then
-                if(v.subject ~= filters_data.subject) then
+                if(ticket.subject ~= filters_data.subject) then
                     return
                 end
             end
             if (filters_data.date ~= "") then
-                if(v.date ~= filters_data.date) then
+                if(ticket.date ~= filters_data.date) then
                     return
                 end
             end
@@ -490,7 +479,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
             ticket_item.Paint = function(s, w, h)
                 draw.RoundedBox(16, 0, 0, w, h, CleanTickets.Config.TicketOutline)
                 draw.RoundedBox(16, 1, 1, w-2, h-2, CleanTickets.Config.TicketBackground)
-                draw.SimpleText(v.subject, "CleanTickets_Font25", 10, 3, Color(255,255,255,255))
+                draw.SimpleText(ticket.subject, "CleanTickets_Font25", 10, 3, Color(255,255,255,255))
                 CleanTickets.GUI.Utils.DrawLine(0, 30, w, 30, CleanTickets.Config.TicketOutline)
             end
 
@@ -500,7 +489,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
                 margin = {1,30,1,1}
             })
 
-            local status_data = CleanTickets.GUI.Utils.GetTicketStatus(v.status)
+            local status_data = CleanTickets.GUI.Utils.GetTicketStatus(ticket.status)
 
             local status_label = CleanTickets.GUI.Utils.DrawLabel({
                 parent = ticket_item,
@@ -523,7 +512,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
             })
 
             ticketbut({
-                data = v,
+                data = ticket,
                 label = status_label,
                 but_container = but_container,
                 item = ticket_item
@@ -540,27 +529,35 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
                 self:SetFontInternal("CleanTickets_Font22")
                 self:SetFGColor(255, 255, 255, 255) 
             end
-            ticketcontent:AppendText(CleanTickets.Lang.TICKET_CREATOR .. v.sender.name .. "\n")
-            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. v.message .. "\n")
-            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DATE .. v.date .. "\n")
-            ticketcontent:AppendText(CleanTickets.Lang.TICKET_TIME .. v.time .. "\n")
-            if next(v.players) then
-                ticketcontent:AppendText(CleanTickets.Lang.TICKET_SELECTEDPLAYER .. "\n")
-                for k, v in pairs(v.players) do
-                    ticketcontent:AppendText("   - "..v[1].."\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_CREATOR .. ticket.sender.name .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. ticket.message .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_DATE .. ticket.date .. "\n")
+            ticketcontent:AppendText(CleanTickets.Lang.TICKET_TIME .. ticket.time .. "\n")
+            if ticket.admin then
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_TAKENBY .. ticket.admin.name)
+            end
+            if next(ticket.players) then
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_SELECTEDPLAYER)
+                for k, v in pairs(ticket.players) do
+                    ticketcontent:AppendText("\n  - " .. v[1])
+                end
+                ticketcontent:AppendText("\n")
+            end
+            if next(ticket.attachments) then
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_ATTACHMENTS)
+                for k, v in pairs(ticket.attachments) do
+                    ticketcontent:AppendText("\n"..v)
                 end
 
             end
-            if v.admin then
-                ticketcontent:AppendText(CleanTickets.Lang.TICKET_TAKENBY .. v.admin.name)
-            end
+            
             
             ticketcontent.Paint = function(self, w, h)
                 draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,0,0,0), false, false, true, false)
             end
 
             item_list:Add(ticket_item)
-        end)
+        end
     end
     CleanTickets.GUI.TLP_RefreshTickets()
     return listpanel
@@ -574,7 +571,7 @@ end
 
 function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
     local filters_data = {
-        status = "",
+        status = nil,
         player = nil,
         subject = "",
         date = ""
@@ -633,7 +630,6 @@ function CleanTickets.GUI.Utils.DisplayFilters(panel, ticketslist, callback)
     local status_element = filter_element(filters_list, CleanTickets.Lang.FILTER_STATUS, 0, function(element_dropdown) 
         element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_OPEN, "Open")
         element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_TAKEN, "Taken")
-        element_dropdown:AddChoice(CleanTickets.Lang.TICKETSTATUS_CLOSED, "Closed")
     end, function(index, text, data) 
         filters_data.status = data
         if callback then

@@ -11,9 +11,6 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                     table.remove(CleanTickets.ClData.OnScreenTickets, k)
                     return
                 end
-
-                
-
                 
                 if ticketdata.status == "Taken" then
                     if player.GetBySteamID64(ticketdata.admin.steamid) == LocalPlayer() then
@@ -152,16 +149,16 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     ticketcontent:AppendText(CleanTickets.Lang.TICKET_SUBJECT .. ticketdata["subject"] .. "\n")
     ticketcontent:AppendText(CleanTickets.Lang.TICKET_DESCRIPTION .. ticketdata["message"])
     if next(ticketdata["players"]) then
-        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_SELECTEDPLAYER .. "\n")
+        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_SELECTEDPLAYER)
         for k, v in pairs(ticketdata["players"]) do
-            ticketcontent:AppendText("   - " .. v[1] .. "\n")
+            ticketcontent:AppendText("\n  - " .. v[1])
         end
 
     end
     if next(ticketdata["attachments"]) then
-        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_ATTACHMENTS .. "\n")
+        ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_ATTACHMENTS)
         for k, v in pairs(ticketdata["attachments"]) do
-            ticketcontent:AppendText("   - " .. v .. "\n")
+            ticketcontent:AppendText("\n" .. v)
         end
 
     end

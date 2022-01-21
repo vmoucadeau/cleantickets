@@ -11,10 +11,6 @@ function CleanTickets.GUI.Panel.Main()
             name = CleanTickets.Lang.PANEL_TAB_SENDTICKET,
             panel = CleanTickets.GUI.Panel.SendTicket
         },
-        [2] = {
-            name = CleanTickets.Lang.PANEL_TAB_MYTICKETS,
-            panel = CleanTickets.GUI.Panel.MyTickets
-        }
     }
 
     local frame = vgui.Create("DFrame")
@@ -115,31 +111,4 @@ function CleanTickets.GUI.Panel.Main()
 
     CleanTickets.GUI.Panel.DisplayTab(tabstable[1], active_panel)
     btn_selection = tabstable[1]
-
-    if CleanTickets.ClFuncs.IsAdmin() then
-
-        local admin_btn = CleanTickets.GUI.Utils.DrawButton({
-            parent = tabs,
-            font = "CleanTickets_Font25",
-            text = CleanTickets.Lang.PANEL_TAB_ADMIN,
-            size = {x=0, y=40},
-            dock = RIGHT,
-            margin = {0, 0, 30, 0},
-            SizeToContentsX = 20,
-            paint = function(s, w, h)
-                draw.RoundedBoxEx(16, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor, true, true, false, false)
-                if s:IsHovered() or (btn_selection == CleanTickets.Lang.PANEL_TAB_ADMIN) then -- Or selected
-                    local empty = 30
-                    draw.RoundedBox(0, empty / 2, h - 3, w - empty, 3, CleanTickets.Config.AccentColor)
-                end
-            end,
-            doclick = function()
-                btn_selection = CleanTickets.Lang.PANEL_TAB_ADMIN
-                active_panel:Clear()
-                CleanTickets.GUI.AdminPanel.Main(active_panel)
-            end
-
-        })
-
-    end
 end

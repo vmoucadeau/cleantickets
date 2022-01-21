@@ -2,8 +2,6 @@ CleanTickets.ClData.AdminMode = CleanTickets.Config.AdminModeByDefault
 
 
 CleanTickets.ClData.OnScreenTickets = {}
-CleanTickets.ClData.PlyTickets = {}
-CleanTickets.ClData.ServerTickets = {}
 
 
 -- Chat command
@@ -13,7 +11,6 @@ hook.Add( "OnPlayerChat", "CleanTicketsCommand", function( ply, strText, bTeam, 
 	strText = string.lower( strText )
 
 	if ( strText == CleanTickets.Config.ChatCommand ) then
-		CleanTickets.ClFuncs.GetTickets()
 		CleanTickets.GUI.Panel.Main()
 		return true
 	end
@@ -67,15 +64,4 @@ end)
 net.Receive("ct_notif", function(len, ply) 
 	local notif = net.ReadTable()
 	CleanTickets.ClFuncs.ShowNotif(notif["text"], notif["type"], notif["len"], notif["sound"])
-end)
-
-net.Receive("ct_getdata", function(len, ply) 
-	local receive = net.ReadTable()
-	CleanTickets.ClData.PlyTickets = receive.plytickets
-	CleanTickets.ClData.ServerTickets = receive.servertickets
-	if CleanTickets.ClFuncs.GetDataCallback then
-		local ticket_item = CleanTickets.ClFuncs.GetDataCallback.Item
-		CleanTickets.ClFuncs.GetDataCallback.Func(ticket_item)
-		CleanTickets.ClFuncs.GetDataCallback = nil
-	end
 end)
