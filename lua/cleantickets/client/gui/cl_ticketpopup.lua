@@ -1,5 +1,3 @@
-
-
 function CleanTickets.GUI.ShowTicket(ticketdata)
     if ticketdata.isupdate then
         for k, v in pairs(CleanTickets.ClData.OnScreenTickets) do
@@ -19,6 +17,14 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                         
                         local takebut = contentpanel:GetChild(0)
                         takebut:Remove()
+
+                        local closebut = ticket:GetChild(4)
+                        print(closebut)
+                        closebut.DoClick = function()
+                            ticket:Close()
+                            CleanTickets.ClFuncs.SendTable("ct_closeticket", ticketdata)
+                        end
+                        
 
                         CleanTickets.GUI.TicketsAdminButtons(contentpanel, ticketdata)
 

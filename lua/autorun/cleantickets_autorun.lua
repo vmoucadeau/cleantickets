@@ -5,7 +5,6 @@ hook.Add( "PostGamemodeLoaded", "CleanTicketInitialize", function()
 
 		-- FastDL
 		resource.AddSingleFile("resource/fonts/cleantickets/Asap.ttf")
-		resource.AddSingleFile("materials/cleantickets/alltickets.png")
 	elseif CLIENT then
 		include( "cleantickets/ct_init.lua" )
 	end

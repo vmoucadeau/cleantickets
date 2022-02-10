@@ -15,7 +15,7 @@ CleanTickets.Config.SubjectsList = {
     "RolePlay Problem"
 }
 CleanTickets.Config.ChatCommand = "!ticket" -- Command to send a ticket (and access to the admin panel)
-CleanTickets.Config.AutoClose = 60 -- Auto close time (in seconds)
+CleanTickets.Config.AutoCloseTimer = 10 -- Auto close time (in seconds)
 CleanTickets.Config.TicketNotifs = true -- Send a notification to the ticket's sender when admin click on "goto", "teleport"...
 CleanTickets.Config.AdminModeByDefault = true -- Admin mode state on admin join the server
 

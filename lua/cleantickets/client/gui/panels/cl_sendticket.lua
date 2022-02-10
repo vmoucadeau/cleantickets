@@ -295,7 +295,6 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
             ["time"] = os.date(CleanTickets.Config.timeformat)
         }
         CleanTickets.ClFuncs.SendTable("ct_sendticket", tabletosend)
-        CleanTickets.ClFuncs.GetTickets()
     end
 
     return panel

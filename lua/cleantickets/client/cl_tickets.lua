@@ -51,11 +51,6 @@ function CleanTickets.ClFuncs.RequestNotif(receiver, msg, type, len, sound)
 	CleanTickets.ClFuncs.SendTable("ct_notif", sendtable)
 end
 
-function CleanTickets.ClFuncs.GetTickets()
-	net.Start("ct_getdata")
-	net.SendToServer()
-end
-
 net.Receive("ct_showticket", function(len, ply) 
 	local ticketdata = net.ReadTable()
 	CleanTickets.GUI.ShowTicket(ticketdata)
