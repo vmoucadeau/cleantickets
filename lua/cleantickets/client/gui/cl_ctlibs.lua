@@ -460,10 +460,8 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
     
     function CleanTickets.GUI.TLP_RefreshTickets()
         item_list:Clear()
-
-        table.foreachi(ticketslist, function(v) 
+        for k, v in ipairs(ticketslist) do 
             -- FILTERS CHECK
-            local v = ticketslist[v]
             if (filters_data.status ~= "") then
                 if(v.status ~= filters_data.status) then
                     return
@@ -551,6 +549,12 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
                 end
 
             end
+            if next(v.attachments) then
+                ticketcontent:AppendText(CleanTickets.Lang.TICKET_ATTACHMENTS)
+                for k, v in pairs(v.attachments) do
+                    ticketcontent:AppendText("\n" .. v)
+                end
+            end
             if v.admin then
                 ticketcontent:AppendText(CleanTickets.Lang.TICKET_TAKENBY .. v.admin.name)
             end
@@ -560,7 +564,7 @@ function CleanTickets.GUI.Utils.TicketsListPanel(ticketslist, parent, ticketbut,
             end
 
             item_list:Add(ticket_item)
-        end)
+        end
     end
     CleanTickets.GUI.TLP_RefreshTickets()
     return listpanel

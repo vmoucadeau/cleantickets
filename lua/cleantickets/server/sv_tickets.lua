@@ -10,7 +10,17 @@ end
 
 local function SendTable(ply, table, network)
     net.Start(network)
-    net.WriteTable(table)
+        net.WriteTable(table)
+    net.Send(ply)
+end
+
+local function SendCompressedTable(ply, table, network)
+    local TableJSON = util.TableToJSON(table)
+    local compressed_str = util.Compress(TableJSON)
+    local len = #compressed_str
+    net.Start(network)
+        net.WriteUInt(len, 16)
+        net.WriteData(compressed_str, len)
     net.Send(ply)
 end
 
@@ -76,9 +86,42 @@ end
  
 net.Receive("ct_getdata", function(len, ply) 
     local tosend = {}
-    tosend.plytickets = GetPlayerTickets(ply:SteamID64())
-    if IsAdmin(ply) then tosend.servertickets = CleanTickets.SvData.ticketslist else tosend.servertickets = {} end
-    SendTable(ply, tosend, "ct_getdata")
+    tosend.plytickets = {}
+    tosend.servertickets = {}
+    local plytickets = GetPlayerTickets(ply:SteamID64())
+    if(#plytickets > 50) then
+        for k,v in pairs(plytickets) do
+            if(k > 50) then break end
+            table.insert(tosend.plytickets, v)
+        end
+    end
+    if IsAdmin(ply) then 
+        if(#CleanTickets.SvData.ticketslist > 50) then
+            for k,v in pairs(CleanTickets.SvData.ticketslist) do
+                if(k > 50) then break end
+                table.insert(tosend.servertickets, v)
+            end
+        end
+        tosend.opentickets = function()
+            local opentickets = 0
+            for k,v in pairs(CleanTickets.SvData.ticketslist) do
+                if(v.status == "Open") then
+                    opentickets = opentickets + 1
+                end
+            end
+            return opentickets
+        end
+        tosend.takentickets = function()
+            local opentickets = 0
+            for k,v in pairs(CleanTickets.SvData.ticketslist) do
+                if(v.status == "Taken") then
+                    opentickets = opentickets + 1
+                end
+            end
+            return opentickets
+        end
+    end
+    SendCompressedTable(ply, tosend, "ct_getdata")
 end)
 
 

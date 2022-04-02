@@ -70,9 +70,16 @@ net.Receive("ct_notif", function(len, ply)
 end)
 
 net.Receive("ct_getdata", function(len, ply) 
-	local receive = net.ReadTable()
-	CleanTickets.ClData.PlyTickets = receive.plytickets
-	CleanTickets.ClData.ServerTickets = receive.servertickets
+	local len = net.ReadUInt(16)
+	local compressed_payload = net.ReadData(len)
+	local payload = util.JSONToTable(util.Decompress(compressed_payload))
+	if(payload.plytickets) then
+		CleanTickets.ClData.PlyTickets = payload.plytickets
+	end
+	if(payload.servertickets) then
+		CleanTickets.ClData.ServerTickets = payload.servertickets
+	end
+
 	if CleanTickets.ClFuncs.GetDataCallback then
 		local ticket_item = CleanTickets.ClFuncs.GetDataCallback.Item
 		CleanTickets.ClFuncs.GetDataCallback.Func(ticket_item)

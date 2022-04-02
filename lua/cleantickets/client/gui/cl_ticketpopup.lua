@@ -161,7 +161,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     if next(ticketdata["attachments"]) then
         ticketcontent:AppendText("\n" .. CleanTickets.Lang.TICKET_ATTACHMENTS .. "\n")
         for k, v in pairs(ticketdata["attachments"]) do
-            ticketcontent:AppendText("   - " .. v .. "\n")
+            ticketcontent:AppendText(v .. "\n\n")
         end
 
     end
