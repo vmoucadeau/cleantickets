@@ -162,5 +162,5 @@ local Language_FR = {
     
 }
 
-CleanTickets.Lang = Language_FR
+CleanTickets.Lang = Language_EN
 
