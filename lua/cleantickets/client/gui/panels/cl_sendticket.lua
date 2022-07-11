@@ -131,7 +131,7 @@ function CleanTickets.GUI.Panel.SendTicket(parent)
             delbut:SetFont("CleanTickets_Font18")
             delbut:SetColor(Color(255, 255, 255))
             delbut:Dock(4)
-            delbut:DockMargin(5, 5, 5, 5)
+            delbut:DockMargin(5, 5, 5, 0)
             delbut.Paint = function(self, w, h)
                 if (self:IsHovered()) then
                     draw.RoundedBox(8, 0, 0, w, h, CleanTickets.Config.AccentColor)

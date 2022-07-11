@@ -371,9 +371,10 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     popup:MakePopup()
     popup:SetTitle(" ")
     popup.Paint = function(self, w, h)
-        draw.RoundedBox(15, 0, 0, w, h, CleanTickets.Config.TicketBackground)
+        draw.RoundedBox(16, 0, 0, w, h, CleanTickets.Config.TicketOutline)	
+        draw.RoundedBox(16, 1, 1, w-2, h-2, CleanTickets.Config.TicketBackground)
         draw.SimpleText(title, "CleanTickets_Font25", 10, 5, Color(255, 255, 255))
-        CleanTickets.GUI.Utils.DrawLine(0, 35, w, 35, Color(255, 255, 255, 255))
+        CleanTickets.GUI.Utils.DrawLine(0, 35, w, 35, CleanTickets.Config.TicketOutline)
     end
 
 
@@ -404,7 +405,6 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
     text:AppendText(content)
 
     text.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(0,0,0,150))
     end
 
     local CancelButton = vgui.Create("DButton", popup)
@@ -420,7 +420,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
         end
     end
     CancelButton.Paint = function(s, w, h)
-        draw.RoundedBoxEx(15, 0, 0, w, h, CleanTickets.Config.CloseButtonColor, false, false, true, false) 
+        draw.RoundedBoxEx(16, 0, 0, w, h, CleanTickets.Config.CloseButtonColor, false, false, true, false) 
     end
 
     local ContinueButton = vgui.Create("DButton", popup)
@@ -436,7 +436,7 @@ function CleanTickets.GUI.Utils.DisplayChoicePopup(pos, title, content, closetxt
         end
     end
     ContinueButton.Paint = function(s, w, h)
-        draw.RoundedBoxEx(15, 0, 0, w, h, Color(0,255,0), false, false, false, true) 
+        draw.RoundedBoxEx(16, 0, 0, w, h, CleanTickets.Config.OpenColor, false, false, false, true) 
     end
 end
 

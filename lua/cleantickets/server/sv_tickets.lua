@@ -63,20 +63,23 @@ local function CloseTicket(payload, closer)
     if payload.status == "Closed" then return end
     payload.isupdate = true
     payload.status = "Closed"
-
+    local sender = player.GetBySteamID64(payload.sender.steamid)
     if closer then
-        if closer:SteamID64() == payload.sender.steamid then
-            SendNotif(player.GetBySteamID64(payload.sender.steamid), CleanTickets.Lang.NOTIF_TICKETCLOSED, 0, 3, CleanTickets.Config.InfoSound)
-        else
-            SendNotif(player.GetBySteamID64(payload.sender.steamid), string.format(CleanTickets.Lang.NOTIF_TICKETCLOSEDBY, closer:GetName()), 0, 3, CleanTickets.Config.InfoSound)
+        if(sender) then
+            SendNotif(sender, string.format(CleanTickets.Lang.NOTIF_TICKETCLOSEDBY, closer:GetName()), 0, 3, CleanTickets.Config.InfoSound)
         end
+        SendNotif(closer, string.format(CleanTickets.Lang.NOTIF_TICKETCLOSED), 0, 3, CleanTickets.Config.InfoSound)
     else
-        SendNotif(player.GetBySteamID64(payload.sender.steamid), CleanTickets.Lang.NOTIF_TICKETCLOSEDBYSRV, 0, 3, CleanTickets.Config.InfoSound)
+        if(sender) then
+            SendNotif(sender, CleanTickets.Lang.NOTIF_TICKETCLOSEDBYSRV, 0, 3, CleanTickets.Config.InfoSound)
+        end
     end
+    TicketBroadcast(payload)
 end
 
 util.AddNetworkString("ct_sendticket")
 net.Receive("ct_sendticket", function(len, ply)
+    if not ply then return end
     if(IsAdmin(ply) and not CleanTickets.Config.Debug) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
     if timer.Exists("ct_timer"..ply:SteamID64()) then SendNotif(ply, string.format(CleanTickets.Lang.NOTIF_NEEDWAIT, math.floor(timer.TimeLeft("ct_timer"..ply:SteamID64()))), 1, 2, CleanTickets.Config.ErrorSound) return end
     local payload = net.ReadTable() 
@@ -104,14 +107,19 @@ net.Receive("ct_takerequest", function(len, ply)
     }
     payload.isupdate = true
     
-    SendNotif(player.GetBySteamID64(payload.sender.steamid), string.format(CleanTickets.Lang.NOTIF_TICKET_TAKEN, ply:GetName()), 0, 3, CleanTickets.Config.InfoSound)
-    TicketBroadcast(payload)
+    if(player.GetBySteamID64(payload.sender.steamid)) then
+        SendNotif(player.GetBySteamID64(payload.sender.steamid), string.format(CleanTickets.Lang.NOTIF_TICKET_TAKEN, ply:GetName()), 0, 3, CleanTickets.Config.InfoSound)
+        TicketBroadcast(payload)
+    else
+        SendNotif(ply, string.format(CleanTickets.Lang.NOTIF_PLAYER_NOT_FOUND, ply:GetName()), 0, 3, CleanTickets.Config.InfoSound)
+        CloseTicket(payload, ply)
+    end
 end)
 
 util.AddNetworkString("ct_closeticket")
 net.Receive("ct_closeticket", function(len, ply)
     local payload = net.ReadTable()
-    if (not IsAdmin(ply)) or (ply:SteamID64() ~= payload.sender.steamid) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
+    if not IsAdmin(ply) then SendNotif(ply, CleanTickets.Lang.NOTIF_NOTADMIN, 1, 2, CleanTickets.Config.ErrorSound) return end 
     CloseTicket(payload, ply)
 end)
 

@@ -6,7 +6,6 @@ local Language_EN = {
     -- TABS
     PANEL_TAB_SENDTICKET = "New ticket",
     
-
     -- [PANEL_SENDTICKET]
     PANEL_SENDTICKET_DESCRIPTION = "Description",
     PANEL_SENDTICKET_SELECTPLAYERS = "Select players",
@@ -44,6 +43,14 @@ local Language_EN = {
     TICKET_BUT_CLOSE = "Close",
     TICKET_BUT_DELETE = "Delete",
 
+    -- DMENU
+    DMENU_TELEPORT_TARGETS = "Teleport targets",
+    DMENU_TELEPORT_EVERYONE = "Teleport everyone",
+    DMENU_TELEPORT = "Teleport ",
+    DMENU_OPEN_LINK = "Open link",
+    DMENU_LINK = "Link ",
+    DMENU_KICK = "Kick for spam",
+
     -- [NOTIFS]
     NOTIF_GOTO = "%s is teleporting to you.",
     NOTIF_TELEPORTED = "You've been teleported by %s.",
@@ -57,9 +64,9 @@ local Language_EN = {
     NOTIF_TICKETCLOSED = "Ticket closed.",
     NOTIF_TICKETCLOSEDBY = "Your ticket has been closed by %s.",
     NOTIF_TICKETCLOSEDBYSRV = "Your ticket has been closed for inactivity.",
+    NOTIF_KICKED = "%s has been kicked.",
+    NOTIF_PLAYER_NOT_FOUND = "Player not found.",
     NOTIF_WARNING = "Warning",
-    PLY_NO_TICKET = "You don't have any tickets yet.",
-    SERVER_NO_TICKET = "There are no tickets on this server yet.",
     
     -- [POPUP TICKET CLAIMED]
     POPUP_TICKET_CLAIMED = "Someone has already taken this ticket :/",
@@ -69,7 +76,7 @@ local Language_EN = {
     -- MISC
     PANEL_TEXTBOXLIMIT = "You've reached the character limit.",
     BTN_CLOSE = "Close",
-
+    KICK_MESSAGE = "[CleanTickets] : You have been kicked for spam",
 }
 
 local Language_FR = {
@@ -89,12 +96,6 @@ local Language_FR = {
     PANEL_SENDTICKET_BTNADDLINK = "Ajouter le lien",
     PANEL_SENDTICKET_BTNSEND = "Envoyer",
 
-    -- FILTERS
-    FILTERS = "Filtres",
-    FILTER_STATUS = "Status :",
-    FILTER_PLAYER = "Joueur :",
-    FILTER_SUBJECT = "Objet :",
-    FILTER_DATE = "Date :",
 
     -- TICKETS STATUS --
     TICKETSTATUS_OPEN = "Ouvert",
@@ -122,6 +123,14 @@ local Language_FR = {
     TICKET_BUT_CLOSE = "Fermer",
     TICKET_BUT_DELETE = "Supprimer",
 
+    -- DMENU
+    DMENU_TELEPORT_TARGETS = "Téléporter joueurs",
+    DMENU_TELEPORT_EVERYONE = "Téléporter tout le monde",
+    DMENU_TELEPORT = "Téléporter ",
+    DMENU_OPEN_LINK = "Ouvrir le lien",
+    DMENU_LINK = "Lien ",
+    DMENU_KICK = "Expulser pour spam",
+
     -- [NOTIFS]
     NOTIF_GOTO = "%s se téléporte vers vous.",
     NOTIF_TELEPORTED = "Vous avez été téléporté par %s.",
@@ -135,9 +144,10 @@ local Language_FR = {
     NOTIF_TICKETCLOSED = "Ticket fermé.",
     NOTIF_TICKETCLOSEDBY = "Votre ticket a été fermé par %s.",
     NOTIF_TICKETCLOSEDBYSRV = "Votre ticket a été fermé pour inactivité.",
+    NOTIF_KICKED = "%s a été expulsé du serveur",
+    NOTIF_PLAYER_NOT_FOUND = "Joueur introuvable.",
     NOTIF_WARNING = "Attention",
-    PLY_NO_TICKET = "Vous n'avez pas encore de ticket.",
-    SERVER_NO_TICKET = "Il n'y a pas encore de ticket sur ce serveur.",
+
     
     -- [POPUP TICKET CLAIMED]
     POPUP_TICKET_CLAIMED = "Quelqu'un a déjà pris ce ticket :/",
@@ -147,7 +157,10 @@ local Language_FR = {
     -- MISC
     PANEL_TEXTBOXLIMIT = "Vous avez atteint la limite de caractères.",
     BTN_CLOSE = "Fermer",
+    KICK_MESSAGE = "[CleanTickets] : Vous avez été expulsé pour spam",
+
+    
 }
 
-CleanTickets.Lang = Language_EN
+CleanTickets.Lang = Language_FR
 

@@ -12,23 +12,37 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
                 end
                 
                 if ticketdata.status == "Taken" then
-                    if player.GetBySteamID64(ticketdata.admin.steamid) == LocalPlayer() then
-
-                        local contentpanel = ticket:GetChild(5)
-                        
+                    local contentpanel = ticket:GetChild(5)
+                    if player.GetBySteamID64(ticketdata.admin.steamid) == LocalPlayer() then                 
                         local takebut = contentpanel:GetChild(0)
-                        takebut:Remove()
+                        
 
                         local closebut = ticket:GetChild(4)
-                        print(closebut)
                         closebut.DoClick = function()
                             ticket:Close()
                             CleanTickets.ClFuncs.SendTable("ct_closeticket", ticketdata)
                         end
-                        
+                        takebut:Remove()
 
                         CleanTickets.GUI.TicketsAdminButtons(contentpanel, ticketdata)
 
+                    else
+                        if(CleanTickets.Config.HideOnTake) then
+                            ticket:Close()
+                            table.remove(CleanTickets.ClData.OnScreenTickets, k)
+                            return
+                        end
+                        local takebut = contentpanel:GetChild(0)
+                        local tick_x, tick_y = ticket:GetPos()
+                        takebut.DoClick = function(self)
+                            CleanTickets.GUI.Utils.DisplayChoicePopup({
+                                ["x"] = ticket:GetWide() + tick_x + 40,
+                                ["y"] = tick_y
+                            }, CleanTickets.Lang.NOTIF_WARNING, CleanTickets.Lang.POPUP_TICKET_CLAIMED, CleanTickets.Lang.BTN_CANCEL, CleanTickets.Lang.BTN_CONTINUE, nil, function()
+                                takebut:Remove()
+                                CleanTickets.GUI.TicketsAdminButtons(contentpanel, ticketdata)
+                            end)
+                        end
                     end
                     local claimLabel = vgui.Create("DButton", ticket)
                     claimLabel:SetSize(60, 20)
@@ -54,7 +68,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     end
     if CleanTickets.Config.MaxTicketsOnScreen <= #CleanTickets.ClData.OnScreenTickets then return end
 
-    local sender = player.GetBySteamID64(ticketdata.sender.steamid)
+    
 
     local frame = vgui.Create("DFrame")
     frame:SetSize(300, 151)
@@ -64,9 +78,9 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     frame:SetTitle(" ")
     frame:ShowCloseButton(false)
     frame:SetAlpha(0)
-    local x, y = frame:GetPos()
+    
     local anim = Derma_Anim("EaseInQuad", frame, function(pnl, anim, delta, data)
-        pnl:SetPos(inQuad(delta, 0, CleanTickets.Config.TicketPos.x), y)
+        pnl:SetPos(inQuad(delta, 0, CleanTickets.Config.TicketPos.x), frame:GetY())
         pnl:SetAlpha(inQuad(delta, 0, 255))
     end)
     -- Animate for 0.5 second
@@ -85,10 +99,10 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
         -- Frame title + line
         local maxnamelen = 17
         local name_to_display = ""
-        if string.len(sender:GetName()) > maxnamelen then
-            name_to_display = string.sub(sender:GetName(), 1, maxnamelen) .. "..."
+        if string.len(ticketdata.sender.name) > maxnamelen then
+            name_to_display = string.sub(ticketdata.sender.name, 1, maxnamelen) .. "..."
         else
-            name_to_display = sender:GetName()
+            name_to_display = ticketdata.sender.name
         end
         draw.SimpleText(name_to_display, "CleanTickets_Font25", 10, 5, Color(255, 255, 255))
         CleanTickets.GUI.Utils.DrawLine(1, 35, w-1, 35, CleanTickets.Config.TicketOutline)
@@ -120,16 +134,7 @@ function CleanTickets.GUI.ShowTicket(ticketdata)
     TakeButton:Dock(3)
     TakeButton:DockMargin(0,0,0,0)
     TakeButton.DoClick = function()
-        if ticketdata.status == "Taken" then
-            CleanTickets.GUI.Utils.DisplayChoicePopup({
-                ["x"] = frame:GetWide() + x + 40,
-                ["y"] = y
-            }, CleanTickets.Lang.NOTIF_WARNING, CleanTickets.Lang.NOTIF_TICKET_CLAIMED, CleanTickets.Lang.BTN_CANCEL, CleanTickets.Lang.BTN_CONTINUE, nil, function()
-                CleanTickets.GUI.TicketsAdminButtons(frame, ticketdata)
-            end)
-        else
-            CleanTickets.ClFuncs.SendTable("ct_takerequest", ticketdata)
-        end
+        CleanTickets.ClFuncs.SendTable("ct_takerequest", ticketdata)
     end
     TakeButton.Paint = function(s, w, h)
         if s:IsHovered() then
@@ -192,7 +197,56 @@ end
 
 -- Admin buttons
 function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
-    local sender = player.GetBySteamID64(ticketdata.sender.steamid)
+    local button_list = {
+        [1] = {
+            ['name'] = CleanTickets.Lang.TICKET_BUT_GOTO,
+            ['action'] = function(slf, target)
+                local command = string.format("ulx goto $%s", target:SteamID())
+                LocalPlayer():ConCommand(command)
+                if CleanTickets.Config.TicketNotifs then
+                    CleanTickets.ClFuncs.RequestNotif(target, string.format(CleanTickets.Lang.NOTIF_GOTO, LocalPlayer():GetName()), 0, 2, nil)
+                end
+            end
+        },
+        [2] = {
+            ['name'] = CleanTickets.Lang.TICKET_BUT_TELEPORT,
+            ['action'] = function(slf, target)
+                local command = string.format("ulx teleport $%s", target:SteamID())
+                LocalPlayer():ConCommand(command)
+                if CleanTickets.Config.TicketNotifs then
+                    CleanTickets.ClFuncs.RequestNotif(target, string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
+                end
+            end
+        },
+        [3] = {
+            ['name'] = CleanTickets.Lang.TICKET_BUT_SPECTATE,
+            ['action'] = function(slf, target)
+                local command = string.format("ulx spectate $%s", target:SteamID())
+                LocalPlayer():ConCommand(command)
+            end
+        },
+        [4] = {
+            ['name'] = CleanTickets.Lang.TICKET_BUT_FREEZE,
+            ['action'] = function(slf, target)
+                if slf:GetText() == CleanTickets.Lang.TICKET_BUT_FREEZE then
+                    local command = string.format("ulx freeze $%s", target:SteamID())
+                    slf:SetText(CleanTickets.Lang.TICKET_BUT_UNFREEZE)
+                    LocalPlayer():ConCommand(command)
+                    if CleanTickets.Config.TicketNotifs then
+                        CleanTickets.ClFuncs.RequestNotif(target, string.format(CleanTickets.Lang.NOTIF_FREEZE, LocalPlayer():GetName()), 0, 2, nil)
+                    end
+                else
+                    local command = string.format("ulx unfreeze $%s", target:SteamID())
+                    slf:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
+                    LocalPlayer():ConCommand(command)
+                    if CleanTickets.Config.TicketNotifs then
+                        CleanTickets.ClFuncs.RequestNotif(target, string.format(CleanTickets.Lang.NOTIF_UNFREEZE, LocalPlayer():GetName()), 0, 2, nil)
+                    end
+                end
+            end
+        },
+    }
+
 
     local AdminButContainer = CleanTickets.GUI.Utils.DrawContainer({
         parent = contentcontainer,
@@ -202,86 +256,28 @@ function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
         dock = RIGHT,
     })
 
-    local GotoButton = vgui.Create("DButton", AdminButContainer)
-    GotoButton:SetTall(23)
-    GotoButton:Dock(4)
-    GotoButton:SetText(CleanTickets.Lang.TICKET_BUT_GOTO)
-    GotoButton:SetFont("CleanTickets_Font22")
-    GotoButton:SetColor(Color(255,255,255))
-    GotoButton.DoClick = function()
-        local command = [["ulx goto $]]..sender:SteamID()..[["]]
-        LocalPlayer():ConCommand(command)
-        if CleanTickets.Config.TicketNotifs then
-            CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_GOTO, LocalPlayer():GetName()), 0, 2, nil)
-        end
-    end
-    GotoButton.Paint = function(self, w, h)
-        if(self:IsHovered()) then
-            draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
-        end
-    end
-
-    local TpButton = vgui.Create("DButton", AdminButContainer)
-    TpButton:SetTall(23)
-    TpButton:Dock(4)
-    TpButton:SetText(CleanTickets.Lang.TICKET_BUT_TELEPORT)
-    TpButton:SetFont("CleanTickets_Font22")
-    TpButton:SetColor(Color(255,255,255))
-    TpButton.DoClick = function()
-        local command = [["ulx teleport $]]..sender:SteamID()..[["]]
-        LocalPlayer():ConCommand(command)
-        if CleanTickets.Config.TicketNotifs then
-            CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
-        end
-    end
-    TpButton.Paint = function(self, w, h)
-        if(self:IsHovered()) then
-            draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
-        end
-    end
-    local SpecButton = vgui.Create("DButton", AdminButContainer)
-    SpecButton:SetTall(23)
-    SpecButton:Dock(4)
-    SpecButton:SetText(CleanTickets.Lang.TICKET_BUT_SPECTATE)
-    SpecButton:SetFont("CleanTickets_Font22")
-    SpecButton:SetColor(Color(255,255,255))
-    SpecButton.DoClick = function()
-        local command = [["ulx spectate $]]..sender:SteamID()..[["]]
-        LocalPlayer():ConCommand(command)
-    end
-    SpecButton.Paint = function(self, w, h)
-        if(self:IsHovered()) then
-            draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
-        end
-    end
-    
-    local FreezeButton = vgui.Create("DButton", AdminButContainer)
-    FreezeButton:SetTall(23)
-    FreezeButton:Dock(4)
-    FreezeButton:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
-    FreezeButton:SetFont("CleanTickets_Font22")
-    FreezeButton:SetColor(Color(255,255,255))
-    FreezeButton.DoClick = function(self)
-        if self:GetText() == CleanTickets.Lang.TICKET_BUT_FREEZE then
-            local command = [["ulx freeze $]]..sender:SteamID()..[["]]
-            self:SetText(CleanTickets.Lang.TICKET_BUT_UNFREEZE)
-            LocalPlayer():ConCommand(command)
-            if CleanTickets.Config.TicketNotifs then
-                CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_FREEZE, LocalPlayer():GetName()), 0, 2, nil)
-            end
-        else
-            local command = [["ulx unfreeze $]]..sender:SteamID()..[["]]
-            self:SetText(CleanTickets.Lang.TICKET_BUT_FREEZE)
-            LocalPlayer():ConCommand(command)
-            if CleanTickets.Config.TicketNotifs then
-                CleanTickets.ClFuncs.RequestNotif(sender, string.format(CleanTickets.Lang.NOTIF_UNFREEZE, LocalPlayer():GetName()), 0, 2, nil)
+    for k, v in ipairs(button_list) do
+        local button = vgui.Create("DButton", AdminButContainer)
+        button:SetText(v.name)
+        button:SetFont("CleanTickets_Font22")
+        button:SetColor(Color(255, 255, 255))
+        button:SetTall(23)
+        button:Dock(4)
+        button:DockMargin(0,0,0,0)
+        button.DoClick = function(self)
+            local sender = player.GetBySteamID64(ticketdata.sender.steamid)
+            if(sender) then
+                v.action(self, sender)
+            else
+                CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.NOTIF_PLAYER_NOT_FOUND, 0, 2, CleanTickets.Config.InfoSound)
+                CleanTickets.ClFuncs.SendTable("ct_closeticket", ticketdata)
             end
         end
-        
-    end
-    FreezeButton.Paint = function(self, w, h)
-        if(self:IsHovered()) then
-            draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
+        button.Paint = function(self, w, h)
+            if(self:IsHovered()) then
+                draw.RoundedBox(0, 0, 0, w, h, CleanTickets.Config.AccentColor)
+            end
+            
         end
     end
     local MoreButton = vgui.Create("DButton", AdminButContainer)
@@ -291,11 +287,63 @@ function CleanTickets.GUI.TicketsAdminButtons(contentcontainer, ticketdata)
     MoreButton:SetFont("CleanTickets_Font22")
     MoreButton:SetColor(Color(255,255,255))
     MoreButton.DoClick = function()
-        -- frame:Close()
+        local MoreMenu = DermaMenu()
+        if next(ticketdata["players"]) then
+            local function teleportid(steamid64)
+                local target = player.GetBySteamID64(steamid64)
+                if target then
+                    local command = string.format("ulx teleport $%s", target:SteamID())
+                    LocalPlayer():ConCommand(command)
+                    if CleanTickets.Config.TicketNotifs then
+                        CleanTickets.ClFuncs.RequestNotif(player.GetBySteamID64(steamid), string.format(CleanTickets.Lang.NOTIF_TELEPORTED, LocalPlayer():GetName()), 0, 2, nil)
+                    end
+                end
+            end
+
+
+            local Child, Parent = MoreMenu:AddSubMenu( CleanTickets.Lang.DMENU_TELEPORT_TARGETS )
+            Parent:SetIcon( "icon16/arrow_down.png" )
+            Child:AddOption( CleanTickets.Lang.DMENU_TELEPORT_EVERYONE, function()
+                for k, v in pairs(ticketdata["players"]) do
+                    teleportid(v[2])
+                end
+            end )
+            for k, v in pairs(ticketdata["players"]) do
+                Child:AddOption( CleanTickets.Lang.DMENU_TELEPORT .. v[1], function()
+                    teleportid(v[2])
+                end )
+            end
+        end
+        if next(ticketdata["attachments"]) then
+            local Child, Parent = MoreMenu:AddSubMenu( CleanTickets.Lang.DMENU_OPEN_LINK )
+            Parent:SetIcon( "icon16/link_go.png" )
+            for k, v in pairs(ticketdata["attachments"]) do
+                Child:AddOption( CleanTickets.Lang.DMENU_LINK .. k, function()
+                    gui.OpenURL(v)
+                end )
+            end
+        end
+        local btnWithIcon = MoreMenu:AddOption( CleanTickets.Lang.DMENU_KICK, function()
+            local sender = player.GetBySteamID64(ticketdata.sender.steamid)
+            if(sender) then
+                local command = string.format('ulx kick $%1s "%2s"', sender:SteamID(), CleanTickets.Lang.KICK_MESSAGE)
+                LocalPlayer():ConCommand(command)
+            else
+                CleanTickets.ClFuncs.ShowNotif(CleanTickets.Lang.NOTIF_PLAYER_NOT_FOUND, 0, 2, CleanTickets.Config.InfoSound)
+            end 
+            CleanTickets.ClFuncs.SendTable("ct_closeticket", ticketdata)
+        end )
+        btnWithIcon:SetIcon( "icon16/door_out.png" )
+        
+
+        MoreMenu:Hide()
+        MoreMenu:Open()
     end
     MoreButton.Paint = function(self, w, h)
         if(self:IsHovered()) then
             draw.RoundedBoxEx(48, 0, 0, w, h, CleanTickets.Config.AccentColor, false, false, false, true) 
         end
     end
+    
+    
 end

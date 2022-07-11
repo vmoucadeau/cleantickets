@@ -17,6 +17,8 @@ CleanTickets.Config.SubjectsList = {
 CleanTickets.Config.ChatCommand = "!ticket" -- Command to send a ticket (and access to the admin panel)
 CleanTickets.Config.AutoCloseTimer = 10 -- Auto close time (in seconds)
 CleanTickets.Config.TicketNotifs = true -- Send a notification to the ticket's sender when admin click on "goto", "teleport"...
+CleanTickets.Config.HideOnTake = false -- Close the ticket popup when an admin take it
+
 
 CleanTickets.Config.TicketPos = {
     x = 25,
