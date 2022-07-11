@@ -1,6 +1,5 @@
-CleanTickets.ClData.AdminMode = CleanTickets.Config.AdminModeByDefault
 
-
+CleanTickets.ClData.AdminMode = false
 CleanTickets.ClData.OnScreenTickets = {}
 
 
@@ -11,10 +10,13 @@ hook.Add( "OnPlayerChat", "CleanTicketsCommand", function( ply, strText, bTeam, 
 	strText = string.lower( strText )
 
 	if ( strText == CleanTickets.Config.ChatCommand ) then
+
 		CleanTickets.GUI.Panel.Main()
 		return true
 	end
 end )
+
+
 
 function CleanTickets.ClFuncs.IsAdmin()
 	for k, v in pairs( CleanTickets.Config.AdminGroups ) do
@@ -51,8 +53,20 @@ function CleanTickets.ClFuncs.RequestNotif(receiver, msg, type, len, sound)
 	CleanTickets.ClFuncs.SendTable("ct_notif", sendtable)
 end
 
-net.Receive("ct_showticket", function(len, ply) 
-	local ticketdata = net.ReadTable()
+function CleanTickets.ClFuncs.IsAdmin()
+    for k, v in pairs(CleanTickets.Config.AdminGroups) do
+        if (LocalPlayer():GetUserGroup() == v) then
+            return true
+        end    
+    end
+    return false
+end
+
+net.Receive("ct_showticket", function(len, ply)
+	local len = net.ReadUInt(16)
+	local compressed_str = net.ReadData(len)
+	local TableJSON = util.Decompress(compressed_str)
+	local ticketdata = util.JSONToTable(TableJSON) 
 	CleanTickets.GUI.ShowTicket(ticketdata)
 end)
 
@@ -60,3 +74,4 @@ net.Receive("ct_notif", function(len, ply)
 	local notif = net.ReadTable()
 	CleanTickets.ClFuncs.ShowNotif(notif["text"], notif["type"], notif["len"], notif["sound"])
 end)
+

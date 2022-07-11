@@ -1,4 +1,5 @@
 function CleanTickets.GUI.ShowTicket(ticketdata)
+    if not CleanTickets.Config.AdminMode then return end
     if ticketdata.isupdate then
         for k, v in pairs(CleanTickets.ClData.OnScreenTickets) do
             if v[2].id == ticketdata.id then

@@ -1,11 +1,11 @@
 
 local Language_EN = {
     -- [PANEL]
+    PANEL_ADMINMODE = "Admin Mode:",
 
     -- TABS
     PANEL_TAB_SENDTICKET = "New ticket",
-    PANEL_TAB_MYTICKETS = "My Ticket",
-    PANEL_TAB_ADMIN = "Admin Panel",
+    
 
     -- [PANEL_SENDTICKET]
     PANEL_SENDTICKET_DESCRIPTION = "Description",
@@ -17,31 +17,6 @@ local Language_EN = {
     PANEL_SENDTICKET_BTNADDLINK = "Add link",
     PANEL_SENDTICKET_BTNSEND = "Send",
 
-    -- [PANEL_MYTICKETS]
-
-
-    -- [PANEL_ADMIN]
-    PANEL_ADMIN_ALLTICKETS = "ALL TICKETS",
-    PANEL_ADMIN_STATS = "STATISTICS",
-
-    -- STATS
-    PANEL_ADMIN_SERVERSTATS = "Server statistics",
-    PANEL_ADMIN_PLYSTATS = "Personal statistics",
-    
-    
-    PANEL_ADMIN_CONNECTEDPLAYERS = "Connected players",
-    PANEL_ADMIN_CONNECTEDADMINS = "Connected admins",
-    PANEL_ADMIN_OPENTICKETS = "Open tickets",
-    PANEL_ADMIN_TAKENTICKETS = "Taken tickets",
-
-
-
-    -- FILTERS
-    FILTERS = "Filters",
-    FILTER_STATUS = "Status:",
-    FILTER_PLAYER = "Player:",
-    FILTER_SUBJECT = "Subject:",
-    FILTER_DATE = "Date:",
 
     -- TICKETS STATUS --
     TICKETSTATUS_OPEN = "Open",
@@ -76,8 +51,9 @@ local Language_EN = {
     NOTIF_UNFREEZE = "You've been unfrozen by %s.",
     NOTIF_DELETE = "Ticket deleted.",
     NOTIF_NOTADMIN = "You don't have permission to do this.",
-    NOTIF_NEEDWAIT = "You need to wait %s for sending a new ticket.",
+    NOTIF_NEEDWAIT = "You need to wait %s" .. "s for sending a new ticket.",
     NOTIF_TICKET_TAKEN = "%s took care of your request",
+    NOTIF_TICKET_SENT = "Your ticket has been sent.",
     NOTIF_TICKETCLOSED = "Ticket closed.",
     NOTIF_TICKETCLOSEDBY = "Your ticket has been closed by %s.",
     NOTIF_TICKETCLOSEDBYSRV = "Your ticket has been closed for inactivity.",
@@ -98,10 +74,10 @@ local Language_EN = {
 
 local Language_FR = {
     -- [PANEL]
+    PANEL_ADMINMODE = "Mode Admin :",
+
     -- TABS
     PANEL_TAB_SENDTICKET = "Nouveau ticket",
-    PANEL_TAB_MYTICKETS = "Mes tickets",
-    PANEL_TAB_ADMIN = "Administration",
 
     -- [PANEL_SENDTICKET]
     PANEL_SENDTICKET_DESCRIPTION = "Description",
@@ -112,24 +88,6 @@ local Language_FR = {
 
     PANEL_SENDTICKET_BTNADDLINK = "Ajouter le lien",
     PANEL_SENDTICKET_BTNSEND = "Envoyer",
-
-    
-    -- [PANEL_ADMIN]
-    PANEL_ADMIN_ALLTICKETS = "TOUS LES TICKETS",
-    PANEL_ADMIN_STATS = "STATISTIQUES",
-
-    -- STATS
-    PANEL_ADMIN_SERVERSTATS = "Statistiques du serveur",
-    PANEL_ADMIN_PLYSTATS = "Statistiques personnelles",
-    
-    
-    PANEL_ADMIN_CONNECTEDPLAYERS = "Joueurs connectés",
-    PANEL_ADMIN_CONNECTEDADMINS = "Admins connectés",
-    PANEL_ADMIN_OPENTICKETS = "Tickets ouverts",
-    PANEL_ADMIN_TAKENTICKETS = "Tickets en cours",
-    
-    
-        
 
     -- FILTERS
     FILTERS = "Filtres",
@@ -171,8 +129,9 @@ local Language_FR = {
     NOTIF_UNFREEZE = "Vous avez été dégelé par %s.",
     NOTIF_DELETE = "Ticket supprimé.",
     NOTIF_NOTADMIN = "Vous n'avez pas la permission d'effectuer cette action.",
-    NOTIF_NEEDWAIT = "Vous devez attendre %s pour envoyer un nouveau ticket.",
+    NOTIF_NEEDWAIT = "Vous devez attendre %s" .. "s pour envoyer un nouveau ticket.",
     NOTIF_TICKET_TAKEN = "%s a pris en charge votre requête.",
+    NOTIF_TICKET_SENT = "Votre ticket a été envoyé.",
     NOTIF_TICKETCLOSED = "Ticket fermé.",
     NOTIF_TICKETCLOSEDBY = "Votre ticket a été fermé par %s.",
     NOTIF_TICKETCLOSEDBYSRV = "Votre ticket a été fermé pour inactivité.",
@@ -190,5 +149,5 @@ local Language_FR = {
     BTN_CLOSE = "Fermer",
 }
 
-CleanTickets.Lang = Language_FR
+CleanTickets.Lang = Language_EN
 

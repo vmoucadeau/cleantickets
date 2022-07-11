@@ -48,6 +48,74 @@ function CleanTickets.GUI.Panel.Main()
 
     end
 
+    if(CleanTickets.ClFuncs.IsAdmin()) then
+        surface.SetFont("CleanTickets_Font20")
+        local w1, h1 = surface.GetTextSize(CleanTickets.Lang.PANEL_ADMINMODE)
+
+        local AdminModeContainer = CleanTickets.GUI.Utils.DrawContainer({
+            pos = {
+                x = frame:GetWide() - w1 - 85,
+                y = 10
+            },
+            size = {
+                x = w1+45,
+                y = 20
+            },
+            dock = 6,
+            parent = frame,
+            paint = function(self, w, h)
+
+            end
+        })
+        local AdminModeText = CleanTickets.GUI.Utils.DrawLabel({
+            text = CleanTickets.Lang.PANEL_ADMINMODE,
+            font = "CleanTickets_Font20",
+            pos = {
+                x = 0,
+                y = 0
+            },
+
+            color = Color(255, 255, 255, 255),
+            parent = AdminModeContainer,
+            dock = 4,
+        })
+        local AdminModeCheckbox = CleanTickets.GUI.Utils.DrawButton({
+            pos = {
+                x = AdminModeContainer:GetWide() - 40,
+                y = 0
+            },
+            size = {
+                x = 40,
+                y = AdminModeContainer:GetTall()
+            },
+            parent = AdminModeContainer,
+            doclick = function(self)
+                if CleanTickets.Config.AdminMode then
+                    for k, v in pairs(CleanTickets.ClData.OnScreenTickets) do
+                        local ticket = v[1]
+                        ticket:Close()
+                        table.remove(CleanTickets.ClData.OnScreenTickets, k)
+                    end
+                end
+                CleanTickets.Config.AdminMode = not CleanTickets.Config.AdminMode
+            end,
+            dock = 6,
+            paint = function(self, w, h)
+                draw.RoundedBox(20, 0, 0, w, h, CleanTickets.Config.TabPanelBackgroundColor)
+                if CleanTickets.Config.AdminMode then
+                    draw.RoundedBox(30, w/2-2, 2, 20, h-4, CleanTickets.Config.OpenColor)
+                else
+                    draw.RoundedBox(20, 2, 2, 20, h-4, CleanTickets.Config.CloseButtonColor)
+                end
+            end
+        })
+
+    end
+    
+
+    
+       
+
     local CloseButton = CleanTickets.GUI.Utils.DrawCloseButton({
         parent = frame,
         pos = {x=frame:GetWide()-30, y=10},
