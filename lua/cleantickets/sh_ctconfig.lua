@@ -47,7 +47,7 @@ CleanTickets.Config.ClosedColor = Color(252, 42, 5)
 
 -- [SERVER] 
 
-CleanTickets.Config.Debug = false -- Admins can send tickets
+CleanTickets.Config.Debug = true -- Admins can send tickets
 CleanTickets.Config.SendTicketDelay = 60 -- Time to wait (in seconds) to send a new ticket (spam protection)
 CleanTickets.Config.AdminGroups = { -- ULX Groups that will receive the tickets
     "superadmin",
